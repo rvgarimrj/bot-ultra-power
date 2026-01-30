@@ -1,0 +1,51 @@
+Header,Keywords,Severity,Purpose,Description,Recommended Value,Code Example,Common Mistakes,References
+Content-Security-Policy,csp script src unsafe inline,CRITICAL,XSS Prevention,Controls which resources can be loaded preventing XSS attacks,default-src 'self'; script-src 'self' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:,"// next.config.ts headers
+{
+  key: 'Content-Security-Policy',
+  value: ""default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;""
+}","Using 'unsafe-eval' when not needed, blocking legitimate CDN resources",https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+Strict-Transport-Security,hsts https ssl preload,CRITICAL,HTTPS Enforcement,Forces browsers to use HTTPS for all future requests,max-age=63072000; includeSubDomains; preload,"// next.config.ts headers
+{
+  key: 'Strict-Transport-Security',
+  value: 'max-age=63072000; includeSubDomains; preload'
+}","Setting max-age too low, forgetting includeSubDomains",https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+X-Frame-Options,clickjacking iframe embedding,CRITICAL,Clickjacking Prevention,Prevents your site from being embedded in iframes,DENY or SAMEORIGIN,"// next.config.ts headers
+{
+  key: 'X-Frame-Options',
+  value: 'DENY'
+}",Using ALLOWFROM which is deprecated,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+X-Content-Type-Options,mime sniffing content type,HIGH,MIME Sniffing Prevention,Prevents browsers from MIME-sniffing responses,nosniff,"// next.config.ts headers
+{
+  key: 'X-Content-Type-Options',
+  value: 'nosniff'
+}",Forgetting to set this header entirely,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+X-XSS-Protection,xss filter browser protection,MEDIUM,Legacy XSS Protection,Enables browser XSS filter (legacy but still useful),1; mode=block,"// next.config.ts headers
+{
+  key: 'X-XSS-Protection',
+  value: '1; mode=block'
+}",Relying on this instead of CSP,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+Referrer-Policy,referrer privacy tracking,HIGH,Privacy Protection,Controls how much referrer information is sent,strict-origin-when-cross-origin or no-referrer,"// next.config.ts headers
+{
+  key: 'Referrer-Policy',
+  value: 'strict-origin-when-cross-origin'
+}","Using unsafe-url which leaks full URL, not setting at all",https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+Permissions-Policy,feature policy camera microphone geolocation,HIGH,Feature Restriction,Restricts which browser features can be used,camera=() microphone=() geolocation=() payment=(),"// next.config.ts headers
+{
+  key: 'Permissions-Policy',
+  value: 'camera=(), microphone=(), geolocation=(), payment=()'
+}",Allowing features you don't actually need,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+X-DNS-Prefetch-Control,dns prefetch performance privacy,LOW,DNS Control,Controls browser DNS prefetching behavior,on (for performance) or off (for privacy),"// next.config.ts headers
+{
+  key: 'X-DNS-Prefetch-Control',
+  value: 'on'
+}",Not considering privacy implications of DNS prefetching,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
+Cross-Origin-Opener-Policy,coop cross origin opener,MEDIUM,Isolation,Isolates browsing context from cross-origin documents,same-origin,"// next.config.ts headers
+{
+  key: 'Cross-Origin-Opener-Policy',
+  value: 'same-origin'
+}",Breaking legitimate cross-origin functionality,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
+Cross-Origin-Resource-Policy,corp cross origin resource,MEDIUM,Resource Protection,Controls which origins can load your resources,same-origin or cross-origin,"// next.config.ts headers
+{
+  key: 'Cross-Origin-Resource-Policy',
+  value: 'same-origin'
+}",Blocking legitimate CDN or third-party resources,https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy

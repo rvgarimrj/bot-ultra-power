@@ -1,0 +1,70 @@
+Check,Keywords,Severity,Attack Vector,Description,Prevention,Code Example,Testing Method
+Input Sanitization,sanitize xss html escape,CRITICAL,XSS,All user input must be sanitized before display,React escapes by default use dangerouslySetInnerHTML carefully,"// React escapes by default
+<p>{userInput}</p> // Safe
+// If you must use HTML:
+import DOMPurify from 'dompurify';
+<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />",Submit <script>alert('xss')</script>
+Zod Schema Validation,zod schema parse validate,CRITICAL,Injection malformed data,All API inputs must be validated with Zod,Define strict schemas for all endpoints,"import { z } from 'zod';
+const schema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100),
+  age: z.number().int().positive().max(150),
+});
+const result = schema.safeParse(body);
+if (!result.success) {
+  return Response.json({ error: result.error }, { status: 400 });
+}",Send malformed JSON invalid types
+SQL Injection,sql injection parameterized query,CRITICAL,SQL Injection,Never concatenate user input in SQL queries,Use parameterized queries (Supabase does this automatically),"// Supabase is safe by default
+const { data } = await supabase
+  .from('users')
+  .select('*')
+  .eq('id', userId); // Parameterized
+// ❌ NEVER do this:
+const { data } = await supabase.rpc('raw_query', {
+  query: `SELECT * FROM users WHERE id = '${userId}'` // VULNERABLE
+});",Try ' OR '1'='1 in inputs
+File Upload Validation,file upload mime type size,HIGH,Malware file bomb,Validate file uploads strictly,Check file type size and scan for malware,"// Validate uploads
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+const maxSize = 5 * 1024 * 1024; // 5MB
+if (!allowedTypes.includes(file.type)) {
+  throw new Error('Invalid file type');
+}
+if (file.size > maxSize) {
+  throw new Error('File too large');
+}",Upload .exe as .jpg oversized files
+URL Validation,url redirect ssrf open redirect,HIGH,SSRF Open Redirect,Validate URLs before using them,Use allowlists validate scheme and host,"function isValidRedirectUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const allowedHosts = ['tubespark.com', 'localhost'];
+    return allowedHosts.includes(parsed.hostname);
+  } catch {
+    return false;
+  }
+}",Try redirecting to external sites
+Email Validation,email format dns mx,MEDIUM,Invalid data spam,Validate email format and optionally MX records,Use Zod email validation consider MX check for signups,"const emailSchema = z.string().email();
+// For critical flows, also verify MX:
+import dns from 'dns/promises';
+async function hasMxRecord(email: string) {
+  const domain = email.split('@')[1];
+  const records = await dns.resolveMx(domain);
+  return records.length > 0;
+}",Use invalid email formats
+Number Range Validation,number range min max integer,MEDIUM,Logic bugs overflow,Validate numeric ranges strictly,Define min max and integer constraints,"const schema = z.object({
+  quantity: z.number().int().min(1).max(100),
+  price: z.number().positive().max(1000000),
+  discount: z.number().min(0).max(100),
+});",Try negative numbers huge values
+String Length Limits,string length max min truncate,MEDIUM,DoS database overflow,Limit string lengths to prevent abuse,Set reasonable max lengths on all text fields,"const schema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(5000),
+  bio: z.string().max(500),
+});",Submit very long strings
+Array Size Limits,array size limit items,MEDIUM,DoS memory exhaustion,Limit array sizes in requests,Set max items on array fields,"const schema = z.object({
+  tags: z.array(z.string()).max(10),
+  items: z.array(itemSchema).max(100),
+});",Submit arrays with thousands of items
+Enum Validation,enum allowed values whitelist,HIGH,Invalid state,Only allow predefined values,Use Zod enum or derive from constants,"// From global.ts single source of truth
+const schema = z.object({
+  niche: contentCategorySchema, // Derived from constant
+  status: z.enum(['draft', 'published', 'archived']),
+});",Submit invalid enum values

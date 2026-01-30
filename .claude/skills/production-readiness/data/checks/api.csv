@@ -1,0 +1,83 @@
+Check,Keywords,Severity,Vulnerability,Description,Prevention,Code Example,Testing Method
+Rate Limiting,rate limit throttle ddos brute force,CRITICAL,DoS brute force attacks,Limit requests per IP/user to prevent abuse,Use Upstash Redis rate limiter with sliding window,"// middleware.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '10 s'),
+});
+export async function middleware(req: NextRequest) {
+  const ip = req.ip ?? '127.0.0.1';
+  const { success } = await ratelimit.limit(ip);
+  if (!success) return new Response('Too Many Requests', { status: 429 });
+}",Load test with k6 or Artillery
+Input Validation,validation zod schema sanitize,CRITICAL,Injection attacks data corruption,Validate all input at API boundaries,Use Zod schemas for all request bodies,"// app/api/ideas/route.ts
+import { z } from 'zod';
+const schema = z.object({
+  topic: z.string().min(3).max(200),
+  niche: contentCategorySchema, // From global.ts
+  language: supportedLocaleSchema,
+});
+export async function POST(req: Request) {
+  const body = await req.json();
+  const result = schema.safeParse(body);
+  if (!result.success) {
+    return Response.json({ error: result.error.flatten() }, { status: 400 });
+  }
+}",Fuzz testing with invalid inputs
+Authentication Check,auth protected route session,CRITICAL,Unauthorized access,All protected routes must verify authentication,Check session in middleware and route handlers,"// middleware.ts
+export async function middleware(req: NextRequest) {
+  const session = await getToken({ req });
+  if (req.nextUrl.pathname.startsWith('/api/protected')) {
+    if (!session) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+}",Test routes without auth token
+CORS Configuration,cors origin cross-origin,HIGH,CSRF cross-site attacks,Configure CORS to allow only trusted origins,Use specific origins not wildcard in production,"// next.config.ts
+async headers() {
+  return [{
+    source: '/api/:path*',
+    headers: [
+      { key: 'Access-Control-Allow-Origin', value: 'https://yourdomain.com' },
+      { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+      { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+    ],
+  }];
+}",Test from different origins
+Response Headers,response security headers api,HIGH,Information disclosure,API responses should not leak sensitive info,Remove server headers add security headers,"// Remove sensitive headers
+export async function GET() {
+  return new Response(JSON.stringify(data), {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': 'no-store',
+    },
+  });
+}",Inspect response headers
+Error Handling,error message stack trace,HIGH,Information disclosure,Errors should not expose internal details,Return generic errors log details server-side,"// Safe error handling
+try {
+  await riskyOperation();
+} catch (error) {
+  console.error('Operation failed:', error); // Log full error
+  return Response.json(
+    { error: 'Operation failed' }, // Generic message to client
+    { status: 500 }
+  );
+}",Trigger errors check responses
+HTTP Methods,method get post put delete options,MEDIUM,Method tampering,Only allow intended HTTP methods,Explicitly handle or reject unexpected methods,"// app/api/users/route.ts
+export async function GET() { /* handle GET */ }
+export async function POST() { /* handle POST */ }
+// Other methods return 405 automatically in Next.js App Router",Test with unexpected HTTP methods
+Request Size Limit,body size limit upload,MEDIUM,DoS resource exhaustion,Limit request body size to prevent abuse,Configure body parser limits,"// next.config.ts
+module.exports = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+// For file uploads use specific limits
+export const config = {
+  api: { bodyParser: { sizeLimit: '10mb' } },
+};",Send oversized requests

@@ -1,0 +1,83 @@
+Check,Keywords,Severity,Impact,Description,Requirement,Code Example,Validation,Tools
+Dynamic Metadata,generateMetadata title description,CRITICAL,Search ranking,Every page must have unique localized metadata,Use generateMetadata() with next-intl,"// app/[locale]/pricing/page.tsx
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Pricing' });
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  };
+}",View page source check meta tags,Lighthouse SEO audit
+Canonical URLs,canonical duplicate content url,HIGH,Duplicate content penalty,Every page must have canonical URL,Include canonical in alternates,"export async function generateMetadata() {
+  return {
+    alternates: {
+      canonical: `https://tubespark.com/${locale}/pricing`,
+    }
+  };
+}",Check canonical tag in head,Google Search Console
+Hreflang Tags,hreflang alternate language locale,CRITICAL,International SEO,All language versions must be linked,Include all 5 locales plus x-default,"alternates: {
+  languages: {
+    'pt-BR': 'https://tubespark.com/pt-BR/pricing',
+    'en-US': 'https://tubespark.com/en-US/pricing',
+    'es': 'https://tubespark.com/es/pricing',
+    'fr': 'https://tubespark.com/fr/pricing',
+    'zh-CN': 'https://tubespark.com/zh-CN/pricing',
+    'x-default': 'https://tubespark.com/en-US/pricing',
+  }
+}",Check hreflang tags in source,Hreflang Tags Testing Tool
+Open Graph,og opengraph social sharing facebook,HIGH,Social sharing,OG tags for rich social media previews,Include og:title og:description og:image,"openGraph: {
+  title: t('meta.title'),
+  description: t('meta.description'),
+  url: `https://tubespark.com/${locale}/pricing`,
+  siteName: 'TubeSpark',
+  locale: locale.replace('-', '_'),
+  type: 'website',
+  images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+}",Facebook Sharing Debugger,Meta Tags Debugger
+Twitter Cards,twitter card social sharing,MEDIUM,Social sharing,Twitter card metadata for rich tweets,Include twitter:card twitter:title twitter:image,"twitter: {
+  card: 'summary_large_image',
+  title: t('meta.title'),
+  description: t('meta.description'),
+  images: ['/twitter-image.png'],
+}",Twitter Card Validator,Twitter Card Validator
+Sitemap Generation,sitemap.xml urls index,HIGH,Crawlability,Generate sitemap with all URLs,app/sitemap.ts with all locales,"// app/sitemap.ts
+export default function sitemap(): MetadataRoute.Sitemap {
+  const locales = ['pt-BR', 'en-US', 'es', 'fr', 'zh-CN'];
+  const routes = ['', '/pricing', '/features'];
+  return routes.flatMap(route =>
+    locales.map(locale => ({
+      url: `https://tubespark.com/${locale}${route}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: route === '' ? 1.0 : 0.8,
+    }))
+  );
+}",Visit /sitemap.xml,Google Search Console
+Robots.txt,robots.txt crawl allow disallow,HIGH,Crawlability,Configure which pages can be crawled,Allow public pages disallow private/api,"// app/robots.ts
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/api/', '/dashboard/', '/settings/'],
+    },
+    sitemap: 'https://tubespark.com/sitemap.xml',
+  };
+}",Visit /robots.txt,Google Robots Testing Tool
+Structured Data,json-ld schema.org organization,HIGH,Rich results,Add JSON-LD structured data for rich snippets,Organization SoftwareApplication FAQPage,"<script type=""application/ld+json"">
+{
+  ""@context"": ""https://schema.org"",
+  ""@type"": ""SoftwareApplication"",
+  ""name"": ""TubeSpark"",
+  ""applicationCategory"": ""BusinessApplication"",
+  ""operatingSystem"": ""Web""
+}
+</script>",Schema.org Validator,Rich Results Test
+Image Alt Text,alt image accessibility seo,HIGH,Image SEO accessibility,All images must have localized alt text,Use next-intl for alt text,"<Image
+  src=""/hero.png""
+  alt={t('images.heroAlt')}
+  width={1200}
+  height={630}
+/>",Check images without alt,axe DevTools
+Page Speed,core web vitals lcp performance,HIGH,Search ranking,Page speed is a ranking factor,Pass Core Web Vitals thresholds,See vitals.csv for optimization tips,PageSpeed Insights score > 90,PageSpeed Insights
+Mobile Friendly,responsive mobile viewport,CRITICAL,Mobile-first indexing,Site must work on mobile devices,Responsive design proper viewport meta,"<meta name=""viewport"" content=""width=device-width, initial-scale=1"" />",Mobile-Friendly Test,Google Mobile-Friendly Test

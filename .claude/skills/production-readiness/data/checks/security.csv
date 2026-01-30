@@ -1,0 +1,85 @@
+Check,Keywords,Severity,Category,Description,Why It Matters,How to Fix,Code Example,Tools,References
+OWASP A01 Broken Access Control,access control rbac authorization permission,CRITICAL,Access Control,Ensure proper authorization checks on all protected resources,#1 vulnerability in OWASP Top 10 2025 - allows unauthorized access to data,"Implement RBAC, validate permissions server-side on every request","// middleware.ts
+export function middleware(request: NextRequest) {
+  const session = await getSession();
+  if (!session?.user) {
+    return NextResponse.redirect('/login');
+  }
+  // Check role-based access
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (session.user.role !== 'admin') {
+      return NextResponse.redirect('/unauthorized');
+    }
+  }
+}","NextAuth.js, Supabase RLS",https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+OWASP A02 Cryptographic Failures,encryption tls ssl https secrets,CRITICAL,Cryptography,Ensure all sensitive data is encrypted at rest and in transit,Exposure of sensitive data like passwords and API keys,Use TLS 1.3 enforce HTTPS and encrypt database columns with sensitive data,"// Force HTTPS in production
+if (process.env.NODE_ENV === 'production' && !request.url.startsWith('https')) {
+  return NextResponse.redirect(
+    `https://${request.headers.get('host')}${request.nextUrl.pathname}`
+  );
+}",SSL Labs Qualys,https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
+OWASP A03 Injection,sql injection xss command injection,CRITICAL,Injection,Prevent SQL XSS and command injection attacks,Attackers can execute malicious code or access unauthorized data,"Use parameterized queries, sanitize user input, implement CSP","// Zod validation
+const schema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100).regex(/^[a-zA-Z\s]+$/),
+});
+// Supabase uses parameterized queries by default",Snyk OWASP ZAP,https://owasp.org/Top10/A03_2021-Injection/
+OWASP A04 Insecure Design,threat modeling secure design architecture,HIGH,Design,Implement security by design with threat modeling,Architectural flaws cannot be fixed with good implementation,"Conduct threat modeling, implement defense in depth, use secure defaults","// Defense in depth example
+// 1. Input validation (Zod)
+// 2. Parameterized queries (Supabase)
+// 3. Output encoding (React escapes by default)
+// 4. Rate limiting (Upstash)
+// 5. Monitoring (Sentry)",OWASP Threat Dragon,https://owasp.org/Top10/A04_2021-Insecure_Design/
+OWASP A05 Security Misconfiguration,default config debug mode verbose errors,CRITICAL,Configuration,Remove debug mode and default credentials in production,Verbose errors expose sensitive information to attackers,"Disable debug mode, remove default passwords, configure security headers properly","// next.config.ts
+const config = {
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+  // Don't expose stack traces in production
+};",Lynis Scout Suite,https://owasp.org/Top10/A05_2021-Security_Misconfiguration/
+OWASP A06 Vulnerable Components,dependency npm audit outdated packages,HIGH,Dependencies,Keep all dependencies updated and scan for vulnerabilities,Known vulnerabilities in dependencies can be exploited,"Run npm audit regularly, use Dependabot, pin dependency versions","# Check for vulnerabilities
+npm audit
+# Auto-fix what's possible
+npm audit fix
+# Update all dependencies
+npm update",npm audit Snyk Dependabot,https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/
+OWASP A07 Auth Failures,authentication session brute force mfa,CRITICAL,Authentication,Implement secure authentication with MFA support,Weak authentication allows account takeover,"Use strong password policies, implement MFA, secure session management","// NextAuth with proper session config
+export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) token.role = user.role;
+      return token;
+    },
+  },
+};",NextAuth.js Clerk Auth0,https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/
+OWASP A08 Data Integrity Failures,deserialization untrusted data ci/cd,HIGH,Integrity,Verify integrity of data and CI/CD pipelines,Untrusted data can lead to remote code execution,"Validate signatures, use integrity checks, secure CI/CD pipeline","// Verify webhook signatures
+import crypto from 'crypto';
+function verifySignature(payload: string, signature: string) {
+  const expected = crypto
+    .createHmac('sha256', process.env.WEBHOOK_SECRET!)
+    .update(payload)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}",Sigstore Cosign,https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/
+OWASP A09 Security Logging,logging audit trail monitoring alerting,HIGH,Logging,Implement comprehensive security logging and alerting,Without logs you cannot detect or investigate breaches,"Log all auth events, set up alerting, use structured logging","// Structured logging with Pino
+import pino from 'pino';
+const logger = pino({ level: 'info' });
+logger.info({
+  event: 'auth.login',
+  userId: user.id,
+  ip: request.ip,
+  userAgent: request.headers.get('user-agent'),
+  success: true,
+});",Pino Sentry Datadog,https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/
+OWASP A10 SSRF,ssrf server-side request forgery url validation,HIGH,SSRF,Prevent Server-Side Request Forgery attacks,Attackers can access internal services or cloud metadata,"Validate and sanitize all URLs, use allowlists, block internal IPs","// Validate URL before fetching
+function validateUrl(url: string): boolean {
+  const parsed = new URL(url);
+  const blocklist = ['localhost', '127.0.0.1', '169.254.169.254'];
+  return !blocklist.includes(parsed.hostname);
+}",Burp Suite OWASP ZAP,https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/

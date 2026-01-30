@@ -1,0 +1,121 @@
+Check,Keywords,Severity,Scope,Description,Implementation,Code Example,Testing Method
+Global Error Boundary,global-error.tsx uncaught exception,CRITICAL,Application,Catch all unhandled errors at root level,Create app/global-error.tsx with Sentry integration,"// app/global-error.tsx
+'use client';
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+  return (
+    <html><body>
+      <h1>Something went wrong</h1>
+      <button onClick={reset}>Try again</button>
+    </body></html>
+  );
+}",Throw error in any component
+Route Error Boundary,error.tsx page error next.js,HIGH,Page/Route,Catch errors at route level for graceful degradation,Create error.tsx in each route folder,"// app/[locale]/dashboard/error.tsx
+'use client';
+import { useTranslations } from 'next-intl';
+export default function DashboardError({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  const t = useTranslations('errors');
+  return (
+    <div className=""p-8 text-center"">
+      <h2>{t('dashboardError')}</h2>
+      <button onClick={reset}>{t('tryAgain')}</button>
+    </div>
+  );
+}",Throw error in dashboard route
+Not Found Handler,not-found.tsx 404 page,HIGH,Application,Custom 404 page for better UX,Create app/not-found.tsx or route-specific not-found.tsx,"// app/not-found.tsx
+import { useTranslations } from 'next-intl';
+export default function NotFound() {
+  const t = useTranslations('errors');
+  return (
+    <div className=""flex flex-col items-center justify-center min-h-screen"">
+      <h1 className=""text-4xl font-bold"">404</h1>
+      <p>{t('pageNotFound')}</p>
+      <Link href=""/"">{t('goHome')}</Link>
+    </div>
+  );
+}",Navigate to non-existent route
+Loading States,loading.tsx suspense skeleton,MEDIUM,Page/Route,Show loading UI while content loads,Create loading.tsx with skeleton UI,"// app/[locale]/dashboard/loading.tsx
+export default function DashboardLoading() {
+  return (
+    <div className=""animate-pulse"">
+      <div className=""h-8 bg-gray-200 rounded w-1/4 mb-4"" />
+      <div className=""h-64 bg-gray-200 rounded"" />
+    </div>
+  );
+}",Throttle network observe loading state
+Sentry Integration,sentry error tracking monitoring,CRITICAL,Application,Send errors to Sentry for tracking and alerting,Configure Sentry SDK with proper DSN and environment,"// sentry.client.config.ts
+import * as Sentry from '@sentry/nextjs';
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 0.1,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+});",Trigger error verify in Sentry dashboard
+API Error Responses,api error json status code,HIGH,API,Return consistent error format from API routes,Use standard error response shape with proper status codes,"// lib/api-error.ts
+export class APIError extends Error {
+  constructor(
+    public message: string,
+    public statusCode: number = 500,
+    public code?: string
+  ) {
+    super(message);
+  }
+}
+// In route handler
+export async function POST(req: Request) {
+  try {
+    // ... operation
+  } catch (error) {
+    if (error instanceof APIError) {
+      return Response.json(
+        { error: error.message, code: error.code },
+        { status: error.statusCode }
+      );
+    }
+    return Response.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}",Test various error scenarios
+User-Friendly Messages,error message i18n localized,MEDIUM,UI,Error messages should be user-friendly and localized,Use i18n for all error messages never show raw errors,"// Component with error handling
+const t = useTranslations('errors');
+try {
+  await submitForm();
+} catch (error) {
+  toast.error(t('formSubmitFailed'));
+  // NOT: toast.error(error.message)
+}",Trigger errors in different locales
+Retry Logic,retry exponential backoff resilience,MEDIUM,Network,Implement retry logic for transient failures,Use exponential backoff for API calls,"// lib/fetch-with-retry.ts
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = 3
+) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+    }
+  }
+}",Simulate network failures

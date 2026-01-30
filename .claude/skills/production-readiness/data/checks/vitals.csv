@@ -1,0 +1,43 @@
+Metric,Keywords,Severity,Good,Needs Improvement,Poor,Description,Factors,Optimization,Code Example,Tools
+LCP,largest contentful paint loading hero image,CRITICAL,≤ 2.5s,2.5s - 4s,> 4s,Measures when the largest content element becomes visible,Hero images fonts above-the-fold content server response time,"Optimize images use next/image preload critical resources use CDN","// Preload LCP image
+<link rel=""preload"" as=""image"" href=""/hero.webp"" />
+// Use Next.js Image
+<Image
+  src=""/hero.webp""
+  priority
+  sizes=""100vw""
+  fill
+/>",Lighthouse PageSpeed Insights Web Vitals Extension
+INP,interaction to next paint responsiveness click delay,HIGH,≤ 200ms,200ms - 500ms,> 500ms,Measures responsiveness to user interactions (replaced FID in 2024),JavaScript execution event handlers main thread blocking,"Optimize event handlers use web workers split long tasks defer non-critical JS","// Use startTransition for non-urgent updates
+import { startTransition } from 'react';
+startTransition(() => {
+  setSearchResults(results);
+});
+// Use useTransition for pending states
+const [isPending, startTransition] = useTransition();",Chrome DevTools Performance panel Web Vitals
+CLS,cumulative layout shift visual stability content jumping,HIGH,≤ 0.1,0.1 - 0.25,> 0.25,Measures visual stability - how much content shifts during loading,Images without dimensions dynamic content fonts loading ads,"Set explicit dimensions for images and videos use font-display reserve space for dynamic content","// Always set dimensions
+<Image
+  src=""/product.jpg""
+  width={400}
+  height={300}
+  alt={t('product.image')}
+/>
+// Reserve space for dynamic content
+<div style={{ minHeight: '200px' }}>
+  {loading ? <Skeleton /> : <Content />}
+</div>",Layout Shift Debugger Chrome DevTools
+FCP,first contentful paint initial render,MEDIUM,≤ 1.8s,1.8s - 3s,> 3s,Measures when first content is painted to screen,Server response time render-blocking resources,Reduce server response time inline critical CSS eliminate render-blocking resources,"// Inline critical CSS
+// Use next/font for optimized font loading
+import { Inter } from 'next/font/google';
+const inter = Inter({ subsets: ['latin'] });",Lighthouse WebPageTest
+TTFB,time to first byte server response,MEDIUM,≤ 800ms,800ms - 1.8s,> 1.8s,Measures server response time,Server processing database queries CDN configuration,Use CDN optimize database queries implement caching,"// Enable ISR for frequently accessed pages
+export const revalidate = 3600; // 1 hour
+// Use edge runtime for faster response
+export const runtime = 'edge';",WebPageTest Chrome DevTools Network
+TBT,total blocking time main thread,HIGH,≤ 200ms,200ms - 600ms,> 600ms,Measures total time main thread is blocked,Long JavaScript tasks synchronous operations,Split long tasks use code splitting defer non-critical scripts,"// Use dynamic imports
+const HeavyComponent = dynamic(
+  () => import('./HeavyComponent'),
+  { loading: () => <Skeleton /> }
+);
+// Use web worker for heavy computation
+const worker = new Worker('/worker.js');",Lighthouse Chrome DevTools Performance

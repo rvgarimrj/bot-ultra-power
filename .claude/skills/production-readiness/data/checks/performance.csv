@@ -1,0 +1,36 @@
+Check,Keywords,Severity,Impact,Description,Target,How to Measure,How to Fix,Code Example,Tools
+Lighthouse Score,lighthouse performance audit score,HIGH,Overall performance,Lighthouse performance score should be 90+,Score > 90,Run Lighthouse in Chrome DevTools or CI,Address each recommendation in report,npx lighthouse https://yourdomain.com --output=json,Chrome DevTools Lighthouse CI
+Server Response Time,ttfb server response time,HIGH,Initial load,Time to First Byte should be under 800ms,TTFB < 800ms,Chrome DevTools Network panel,Use CDN optimize server-side code add caching,"// Enable edge caching
+export const runtime = 'edge';
+// Or use ISR
+export const revalidate = 3600;",WebPageTest Chrome DevTools
+JavaScript Bundle Size,bundle size javascript initial,HIGH,Load time,Initial JS bundle should be under 200KB,< 200KB initial,Build analysis with @next/bundle-analyzer,Code split lazy load remove unused dependencies,"// Dynamic import
+const Heavy = dynamic(() => import('./Heavy'), {
+  loading: () => <Skeleton />
+});",@next/bundle-analyzer Bundlephobia
+Image Optimization,image webp avif next/image lazy,HIGH,Load time bandwidth,All images should be optimized,WebP/AVIF format lazy loading,Check image formats and sizes in Network panel,Use next/image with proper sizing,"<Image
+  src=""/hero.jpg""
+  width={1200}
+  height={630}
+  priority // Only for above-fold
+  placeholder=""blur""
+/>",Next.js Image Optimization
+Font Loading,font loading fout foit google fonts,MEDIUM,Visual stability,Fonts should load without layout shift,No FOUT/FOIT,Watch for text flash during load,Use next/font with display swap,"import { Inter } from 'next/font/google';
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+});",next/font Chrome DevTools
+Third-Party Scripts,third-party analytics gtm scripts,MEDIUM,Main thread blocking,Third-party scripts can block main thread,Defer non-critical scripts,Check third-party impact in Lighthouse,Use next/script with afterInteractive strategy,"<Script
+  src=""https://analytics.com/script.js""
+  strategy=""afterInteractive""
+/>",Lighthouse Chrome DevTools
+Critical CSS,css critical above-fold render blocking,MEDIUM,First paint,Critical CSS should be inlined,No render-blocking CSS,Check for render-blocking resources,Next.js handles CSS extraction automatically,Automatic in Next.js App Router,Lighthouse
+Caching Strategy,cache cdn edge static,HIGH,Repeat visits,Static assets should be cached at edge,Long cache headers for static,Check Cache-Control headers,Configure cache headers in next.config.ts,"// next.config.ts
+headers: [{
+  source: '/_next/static/:path*',
+  headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }]
+}]",Chrome DevTools Network
+Compression,gzip brotli compression,HIGH,Transfer size,Responses should be compressed,Brotli or gzip enabled,Check Content-Encoding header,Vercel enables compression automatically,Automatic on Vercel,Chrome DevTools Network
+Prefetching,prefetch preload link,MEDIUM,Navigation speed,Prefetch likely next pages,Critical resources prefetched,Check prefetch hints in Network,Next.js Link prefetches by default,"<Link href=""/pricing"" prefetch>
+  {t('nav.pricing')}
+</Link>",Chrome DevTools

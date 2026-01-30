@@ -1,0 +1,58 @@
+Check,Keywords,Severity,Vulnerability,Description,Best Practice,Code Example,Testing Method,References
+Session Management,session jwt cookie expiry,CRITICAL,Session hijacking,Sessions must be securely managed with proper expiry,Use short-lived JWTs with refresh tokens,"// auth.config.ts
+export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    maxAge: 60 * 60, // 1 hour
+  },
+};",Test session timeout and refresh,https://owasp.org/www-project-web-security-testing-guide/
+Password Policy,password strength complexity requirements,HIGH,Weak passwords,Enforce strong password requirements,Minimum 8 chars uppercase lowercase number symbol,"// Zod password schema
+const passwordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Must contain uppercase')
+  .regex(/[a-z]/, 'Must contain lowercase')
+  .regex(/[0-9]/, 'Must contain number')
+  .regex(/[^A-Za-z0-9]/, 'Must contain special char');",Try weak passwords,NIST Password Guidelines
+Brute Force Protection,brute force rate limit lockout,CRITICAL,Account takeover,Protect against credential stuffing and brute force,Rate limit login attempts implement account lockout,"// Rate limit login attempts
+const loginRateLimit = new Ratelimit({
+  limiter: Ratelimit.slidingWindow(5, '15 m'),
+});
+// After 5 failed attempts, lock for 15 minutes",Test rapid login attempts,OWASP Authentication Cheat Sheet
+OAuth Configuration,oauth google github redirect,HIGH,Token theft,OAuth must be properly configured,Validate redirect URIs use state parameter,"// Ensure redirect URI matches exactly
+// Configure in Google Cloud Console:
+// http://localhost:3000/api/auth/callback/google
+// https://yourdomain.com/api/auth/callback/google",Test OAuth flow with invalid redirects,OAuth 2.0 Security Best Practices
+CSRF Protection,csrf token cross-site request,CRITICAL,Cross-site attacks,Protect forms from CSRF attacks,NextAuth handles CSRF automatically verify webhooks,"// NextAuth includes CSRF protection
+// For custom forms use token:
+import { getCsrfToken } from 'next-auth/react';
+<input type=""hidden"" name=""csrfToken"" value={csrfToken} />",Test form submission without token,OWASP CSRF Prevention
+Secure Cookies,cookie secure httponly samesite,HIGH,Cookie theft,Auth cookies must have secure attributes,Set HttpOnly Secure SameSite on all auth cookies,"// Next-Auth sets these by default
+// For custom cookies:
+response.cookies.set('session', token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'lax',
+  path: '/',
+});",Inspect cookies in DevTools,OWASP Session Management
+Protected Routes,middleware protected route auth,CRITICAL,Unauthorized access,Protect all authenticated routes,Use middleware to verify auth on protected paths,"// middleware.ts
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('next-auth.session-token');
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+}",Access protected routes without auth,NextAuth Middleware
+Logout Security,logout session invalidation clear,MEDIUM,Session persistence,Logout must fully invalidate session,Clear all tokens and cookies on logout,"// Proper logout
+import { signOut } from 'next-auth/react';
+await signOut({ callbackUrl: '/' });
+// Server-side token invalidation if needed",Verify session invalid after logout,OWASP Logout
+Account Enumeration,enumeration username email exists,MEDIUM,Information disclosure,Don't reveal if account exists,Use generic error messages,"// ❌ BAD
+'No account found with that email'
+// ✅ GOOD
+'If an account exists, you will receive an email'",Test login with nonexistent email,OWASP Testing Guide
+MFA Support,mfa 2fa totp authenticator,HIGH,Account security,Offer multi-factor authentication,Support TOTP authenticator apps,"// Consider NextAuth with node-2fa
+// Or use Clerk/Auth0 with built-in MFA",Test MFA enrollment and verification,NIST MFA Guidelines

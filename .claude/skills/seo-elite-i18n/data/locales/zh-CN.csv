@@ -1,0 +1,11 @@
+Topic,Keywords,Description,Search Engine,Market Share,Optimization,Local Keywords,Code Example,Cultural Notes
+Baidu Optimization,百度 优化 搜索,针对百度的SEO优化。中国市场需要特殊策略。,Baidu,70%+ 中国市场,百度算法与Google不同。注册百度站长平台。使用百度统计。,百度收录 | 百度权重 | 百度快照 | 百度蜘蛛,"提交网站到百度站长平台。使用百度统计代码。","百度是中国主要搜索引擎。Google在中国被封锁。"
+Title Optimization,标题 meta title seo,中文标题优化。注意字符限制。,Baidu + Google,N/A,使用中文关键词。简洁有力。包含品牌名。30个中文字符左右。,免费 | 最好 | 如何 | 完整指南 | 教程 | 攻略,"title: 'YouTube脚本生成器 - 免费在线工具 | TubeSpark'","中文字符比英文占更多空间。标题要更短。"
+Simplified vs Traditional,简体 繁体 中文,简体中文(中国大陆)vs繁体中文(台湾香港)。,Varies,N/A,zh-CN用简体。zh-TW用繁体。不要混用。,简体: 视频 | 繁体: 視頻 | 简体: 软件 | 繁体: 軟體,"确保使用正确的字符集。简体用于中国大陆。","简体和繁体不能混用。选择目标市场使用对应字符集。"
+URL Structure,网址 结构 链接,中文网站URL结构。,Baidu + Google,N/A,可以使用中文URL或拼音。百度支持中文URL。Google建议拼音。,/ruhe-chuangjian-shipin | /zh-CN/youtube-jiaoben,"/zh-CN/youtube-script-generator 或 /zh-CN/油管脚本生成器","百度支持中文URL。但编码后会很长。建议用拼音。"
+Mobile SEO,手机 移动端 优化,移动端优化对中国市场至关重要。,Baidu + Google,90%+ 移动访问,微信内置浏览器优化。移动优先设计。针对安卓优化。,N/A,"针对微信浏览器测试。安卓设备测试优先。","中国主要使用安卓。微信是主要入口。"
+WeChat Integration,微信 公众号 小程序,微信生态系统整合。,WeChat Search,N/A,注册微信公众号。考虑小程序。微信分享优化。,公众号 | 小程序 | 微信支付 | 朋友圈,"优化微信分享卡片。考虑开发微信小程序。","微信是中国最重要的平台。必须优化微信体验。"
+ICP License,ICP备案 域名 服务器,中国网站需要ICP备案才能正常访问。,Baidu,Required,需要ICP备案。服务器需在中国境内。否则访问慢或被封。,ICP备案号 | 公安备案 | 服务器托管,"显示ICP备案号在网站底部。使用中国CDN。","没有ICP备案的网站在中国访问很慢或无法访问。"
+Content Strategy,内容 文章 博客,中国市场内容策略。,Baidu,N/A,原创内容。避免敏感词。符合中国法规。定期更新。,教程 | 攻略 | 技巧 | 干货 | 实战,"创建高质量原创内容。避免政治敏感话题。","内容必须符合中国法规。避免敏感话题。"
+Trust Signals,信任 安全 认证,中国市场的信任信号。,Baidu,N/A,显示企业资质。ICP备案。支付宝/微信支付。400客服电话。,企业认证 | ICP备案 | 可信网站 | 400电话,"显示ICP备案号。提供本地客服。支持本地支付。","中国用户重视企业资质认证。显示所有相关证书。"
+Local Payment,支付宝 微信支付 银联,中国本地支付方式。,N/A,N/A,接入支付宝和微信支付。信用卡不常用。银联卡支持。,支付宝 | 微信支付 | 银联 | 花呗 | 白条,"集成支付宝和微信支付API。显示支持的支付方式。","信用卡在中国不普及。必须支持支付宝和微信支付。"

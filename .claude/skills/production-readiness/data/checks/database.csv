@@ -1,0 +1,63 @@
+Check,Keywords,Severity,Impact,Description,Best Practice,Code Example,Monitoring,Tools
+Connection Pooling,pool pgbouncer supabase connection limit,CRITICAL,Server crashes under load,Database connections are expensive - pool them,Use PgBouncer or Supabase pooler in transaction mode for serverless,"// Supabase with pooler (for serverless)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    db: {
+      schema: 'public',
+    },
+    // Use pooler URL in production
+  }
+);",Monitor active connections vs max_connections,Supabase Dashboard PgBouncer
+Query Timeout,timeout slow query long running,HIGH,Hung requests resource exhaustion,Set reasonable query timeouts to prevent resource exhaustion,5-30 second timeout depending on operation type,"// Set statement timeout
+await supabase.rpc('set_config', {
+  setting: 'statement_timeout',
+  value: '30s',
+  is_local: true
+});
+// Or in connection string
+?statement_timeout=30000",Track query durations alert on timeouts,pg_stat_statements Supabase Logs
+Row Level Security,rls policy supabase authorization,CRITICAL,Data breach unauthorized access,Enable RLS on all tables with sensitive data,Create policies for each operation type (SELECT INSERT UPDATE DELETE),"-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+-- Policy for users to see own data
+CREATE POLICY ""Users can view own profile""
+  ON profiles FOR SELECT
+  USING (auth.uid() = user_id);
+-- Policy for insert
+CREATE POLICY ""Users can insert own profile""
+  ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = user_id);",Check for tables without RLS enabled,Supabase Dashboard SQL queries
+Index Coverage,index query performance explain analyze,HIGH,Slow queries high CPU,Critical queries should use indexes,Create indexes for frequently filtered/joined columns,"-- Create index for common query
+CREATE INDEX CONCURRENTLY idx_videos_user_id
+  ON videos(user_id);
+-- Composite index for common filter
+CREATE INDEX CONCURRENTLY idx_videos_user_status
+  ON videos(user_id, status);
+-- Check query plan
+EXPLAIN ANALYZE SELECT * FROM videos WHERE user_id = 'xxx';",Monitor slow query log check sequential scans,pg_stat_user_indexes EXPLAIN ANALYZE
+Backup Strategy,backup restore point-in-time pitr,CRITICAL,Data loss disaster recovery,Automated backups with point-in-time recovery,Daily backups 7-day retention PITR for critical data,"-- Supabase Pro includes daily backups
+-- For custom backup:
+pg_dump -Fc dbname > backup.dump
+-- Restore
+pg_restore -d dbname backup.dump",Test restore process regularly,Supabase Backups pg_dump
+Migration Safety,migration zero-downtime ddl,HIGH,Downtime service interruption,Migrations should not lock tables or cause downtime,Use CREATE INDEX CONCURRENTLY avoid ALTER TABLE locks,"-- Safe: Create index concurrently
+CREATE INDEX CONCURRENTLY idx_name ON table(column);
+-- Unsafe: This locks table
+ALTER TABLE large_table ADD COLUMN new_col TEXT DEFAULT 'value';
+-- Safe alternative: Add nullable then backfill
+ALTER TABLE large_table ADD COLUMN new_col TEXT;
+UPDATE large_table SET new_col = 'value' WHERE new_col IS NULL;",Run migrations on staging first monitor locks,Supabase Migrations GitHub Actions
+Connection Limits,max_connections pool exhaustion,HIGH,Connection refused errors,Understand and respect connection limits,Supabase Free: 60 Pro: 200 - use pooler to share connections,"// Check current connections
+SELECT count(*) FROM pg_stat_activity;
+// Monitor in real-time
+SELECT
+  state,
+  count(*)
+FROM pg_stat_activity
+GROUP BY state;",Alert when connections > 80% of max,Supabase Dashboard Grafana
+Prepared Statements,prepared statement sql injection,MEDIUM,SQL injection performance,Use prepared statements for repeated queries,Supabase client uses prepared statements by default,"// Supabase uses parameterized queries
+const { data } = await supabase
+  .from('profiles')
+  .select('*')
+  .eq('user_id', userId); // Safe - parameterized",N/A - built into Supabase client,Supabase client

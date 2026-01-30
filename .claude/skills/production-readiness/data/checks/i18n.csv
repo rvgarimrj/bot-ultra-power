@@ -1,0 +1,50 @@
+Check,Keywords,Severity,Locale,Description,Requirement,Code Example,Common Mistakes,Validation
+All 5 Locales Supported,locale language pt-BR en-US es fr zh-CN,CRITICAL,All,Application must support all 5 required locales,pt-BR en-US es fr zh-CN must all have translations,"// i18n/routing.ts
+export const locales = ['pt-BR', 'en-US', 'es', 'fr', 'zh-CN'];
+export const defaultLocale = 'pt-BR';",Forgetting zh-CN or other locales,Check messages/*.json files exist
+No Hardcoded Strings,hardcoded string i18n useTranslations,CRITICAL,All,All user-facing strings must use i18n,Use useTranslations or getTranslations for all text,"// ❌ BAD
+<button>Save</button>
+// ✅ GOOD
+const t = useTranslations('common');
+<button>{t('save')}</button>",Hardcoded strings in JSX props error messages,Run eslint jsx-no-literals rule
+Dynamic Metadata Localized,metadata title description locale,CRITICAL,All,Page metadata must be localized per locale,Use generateMetadata with getTranslations,"export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Page' });
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  };
+}",Hardcoded English metadata,View source in each locale
+Image Alt Text Localized,alt text image i18n,HIGH,All,Image alt text must be translated,Use t() for all alt attributes,"<Image
+  src=""/hero.png""
+  alt={t('images.heroAlt')}
+/>",Hardcoded alt text,Check images with axe DevTools
+Error Messages Localized,error message validation toast,HIGH,All,Error messages must be in user's language,Use i18n for all user-facing errors,"try {
+  await submitForm();
+} catch (error) {
+  toast.error(t('errors.submitFailed'));
+}",Showing raw error.message to users,Trigger errors in different locales
+Placeholder Text Localized,placeholder input form,MEDIUM,All,Form placeholders must be translated,Use t() for placeholder attributes,"<input
+  placeholder={t('form.emailPlaceholder')}
+/>",Hardcoded placeholder text,Check forms in each locale
+Aria Labels Localized,aria-label accessibility screen reader,HIGH,All,Accessibility labels must be translated,Use t() for all aria-label attributes,"<button aria-label={t('buttons.closeModal')}>
+  <XIcon />
+</button>",Hardcoded aria-labels,Test with screen reader in each locale
+Date/Time Formatting,date time format intl locale,MEDIUM,All,Dates and times must respect locale format,Use Intl.DateTimeFormat or date-fns with locale,"const formatDate = (date: Date, locale: string) => {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'long',
+  }).format(date);
+};",Using hardcoded date formats,Check dates display correctly per locale
+Number Formatting,number currency format locale,MEDIUM,All,Numbers and currency must respect locale format,Use Intl.NumberFormat with locale,"const formatCurrency = (amount: number, locale: string) => {
+  const currency = locale === 'pt-BR' ? 'BRL' : 'USD';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(amount);
+};",Using .toFixed() for currency,Check prices display correctly per locale
+Plural Forms,plural pluralization count,MEDIUM,All,Handle plural forms correctly for each language,Use next-intl plural syntax,"// messages/en-US.json
+{
+  ""items"": ""{count, plural, =0 {No items} one {1 item} other {# items}}""
+}
+// Usage
+t('items', { count: 5 }) // ""5 items""",Concatenating count with strings,Test with 0 1 and many items

@@ -1,0 +1,58 @@
+Check,Keywords,Severity,Regulation,Description,Requirement,Implementation,Penalty
+Privacy Policy,privacy policy data collection use,CRITICAL,GDPR CCPA,Publish clear privacy policy explaining data practices,Must explain what data is collected how it's used and user rights,"Create /privacy page with:
+- Data collected
+- How data is used
+- Third-party sharing
+- User rights (access, delete, export)
+- Contact information
+- Last updated date",Up to €20M or 4% revenue (GDPR)
+Terms of Service,terms conditions legal agreement,HIGH,Contract Law,Define legal terms of using your service,Clear terms that users must accept before using service,"Create /terms page with:
+- Service description
+- User obligations
+- Payment terms (if applicable)
+- Limitation of liability
+- Dispute resolution
+- Governing law",Legal liability exposure
+Cookie Consent,cookie consent banner gdpr,CRITICAL,GDPR ePrivacy,Obtain consent before setting non-essential cookies,Must get opt-in consent before analytics/marketing cookies,"Implement cookie banner with:
+- Accept/Reject buttons (equal prominence)
+- Cookie categories (necessary, analytics, marketing)
+- Link to cookie policy
+- Consent storage
+- Easy withdrawal mechanism",Up to €20M or 4% revenue (GDPR)
+Data Subject Rights,dsar access deletion portability,CRITICAL,GDPR CCPA,Enable users to exercise their data rights,Must provide mechanisms for access deletion and export,"Implement in settings:
+- View my data (JSON export)
+- Delete my account
+- Download my data
+- Opt-out of processing
+- 30-day response SLA",€20M (GDPR) or $7500/violation (CCPA)
+Data Processing Agreements,dpa processor controller vendor,HIGH,GDPR,Have DPAs with all data processors,Written agreement with each vendor that processes user data,"Ensure DPAs signed with:
+- Supabase
+- Stripe
+- Analytics providers
+- Email providers
+- AI providers",Liability for vendor breaches
+Breach Notification,breach security incident notification,CRITICAL,GDPR,Notify authorities and users of data breaches,72-hour notification to supervisory authority if breach affects users,"Create incident response plan:
+- Detection procedures
+- Assessment criteria
+- Notification templates
+- Authority contact info
+- User communication plan",Fines for late notification
+Age Verification,coppa children age verification,HIGH,COPPA,Verify age if service might be used by children,If targeting users under 13 must get parental consent,"If applicable implement:
+- Age gate at signup
+- Parental consent flow
+- Data minimization for minors",Up to $50K per violation (COPPA)
+Do Not Sell,ccpa do not sell opt out,HIGH,CCPA,Provide opt-out for sale of personal information,Must have Do Not Sell link if selling/sharing data for advertising,"If applicable add:
+- Do Not Sell link in footer
+- Opt-out mechanism
+- Honor GPC (Global Privacy Control) signals",$7500 per intentional violation
+International Transfers,data transfer adequacy sccs,HIGH,GDPR,Ensure lawful transfer of data outside EU/EEA,Use Standard Contractual Clauses or adequacy decisions,"For US services:
+- Use providers with SCCs
+- Document transfer mechanisms
+- Consider data localization
+- Privacy Shield invalid use SCCs",Fines and injunctions
+Accessibility Statement,accessibility statement vpat,MEDIUM,ADA Section 508,Publish accessibility commitment and contact,Good practice to document accessibility efforts,"Create /accessibility page with:
+- Commitment statement
+- Conformance level (WCAG 2.1 AA)
+- Known limitations
+- Contact for issues
+- Third-party audit results",ADA lawsuits (US)

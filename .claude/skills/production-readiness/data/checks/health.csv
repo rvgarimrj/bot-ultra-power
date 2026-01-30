@@ -1,0 +1,64 @@
+Check,Keywords,Severity,Type,Description,Implementation,Code Example,Response Format
+Health Endpoint,health check api status,CRITICAL,Liveness,Basic health check endpoint returning 200 if app is running,Create /api/health route that returns status,"// app/api/health/route.ts
+export async function GET() {
+  return Response.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+  });
+}",{ status: 'healthy' timestamp: '2024-...' }
+Database Check,database connection health postgres,HIGH,Readiness,Verify database connectivity,Query database and check response time,"async function checkDatabase() {
+  const start = Date.now();
+  try {
+    await supabase.from('profiles').select('count').limit(1);
+    return { status: 'ok', latency: Date.now() - start };
+  } catch (error) {
+    return { status: 'error', message: error.message };
+  }
+}",{ status: 'ok' latency: 5 }
+Redis Check,redis cache upstash health,MEDIUM,Readiness,Verify Redis/cache connectivity,Ping Redis and check response,"async function checkRedis() {
+  try {
+    await redis.ping();
+    return { status: 'ok' };
+  } catch (error) {
+    return { status: 'error', message: error.message };
+  }
+}",{ status: 'ok' }
+External Services,external api service health,MEDIUM,Dependency,Check critical external service availability,Check each external dependency,"async function checkExternalServices() {
+  const services = {
+    stripe: await checkStripe(),
+    openai: await checkOpenAI(),
+  };
+  return services;
+}",{ stripe: { status: 'ok' } openai: { status: 'ok' } }
+Version Info,version build deployment info,LOW,Info,Include app version in health response,Add version from package.json or build,"const health = {
+  version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+  commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7),
+  environment: process.env.NODE_ENV,
+};",{ version: '1.0.0' commit: 'abc1234' }
+Startup Probe,startup initialization warm up,MEDIUM,Startup,Check if app has finished initializing,Return 503 until fully initialized,"let isReady = false;
+// In startup
+initializeApp().then(() => { isReady = true; });
+// In health check
+if (!isReady) {
+  return Response.json({ status: 'starting' }, { status: 503 });
+}",{ status: 'starting' } with 503
+Graceful Degradation,degraded partial failure,MEDIUM,Resilience,Return degraded status if non-critical services fail,Return 200 with warnings for non-critical failures,"const health = {
+  status: allCriticalOk ? 'healthy' : 'degraded',
+  checks: {
+    database: dbCheck, // critical
+    cache: cacheCheck, // non-critical
+  },
+  warnings: cacheCheck.status === 'error' ? ['Cache unavailable'] : [],
+};
+return Response.json(health, {
+  status: allCriticalOk ? 200 : 503
+});",{ status: 'degraded' warnings: ['Cache unavailable'] }
+Response Time,response time sla latency,MEDIUM,Performance,Health check should respond quickly,Health check should return < 100ms,"export async function GET() {
+  const start = Date.now();
+  // ... checks
+  const duration = Date.now() - start;
+  return Response.json({
+    status: 'healthy',
+    responseTime: duration,
+  });
+}",{ status: 'healthy' responseTime: 45 }
