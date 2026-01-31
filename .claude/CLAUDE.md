@@ -94,11 +94,18 @@ curl "https://garimdreaming-apps-production.up.railway.app/api/add-app?secret=ga
 
 **Icones disponiveis:** Scroll, Scissors, Activity, Atom, Timer, FileText, FileType, Sparkles, Rocket, Brain, Palette, Music, Camera, Globe, Shield, Cpu
 
-## REGRA #23-24: i18n e Feedback (2026-01-31+)
+## REGRA #23-25: i18n, Feedback e Doação (2026-01-31+)
 Novos apps DEVEM ter:
 - next-intl com rotas `[locale]/`
 - **FeedbackWidget** no footer
+- **DonationWidget** antes do footer (crypto donations)
 - API `/api/feedback` usando **NEON** (NAO Supabase!)
+
+**Crypto Wallets (DonationWidget):**
+- Solana (USDT/USDC/SOL): `HET7XZpgcsBCvmkWEmors7zysvc2eKSCnDbL8YVmFXiQ`
+- Ethereum (USDT/USDC/ETH): `0x76d56857Df003331462b0369caA40DB04d4ECaa1`
+- Bitcoin Taproot: `bc1pgfcn9zp4e994e4575vehn5ppl5ywd63cvm0lsaejyakrgdc2h4pshct2u5`
+- Bitcoin SegWit: `bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav`
 
 **Neon Connection:**
 ```bash
@@ -108,7 +115,10 @@ Novos apps DEVEM ter:
 
 **Tabela:** `garimdreaming_feedback` (id, app_slug, rating, suggestion, session_id, created_at)
 
-**Templates:** `~/clawd/templates/feedback-widget-template.md`, `~/clawd/templates/seo-i18n-template.md`
+**Templates:**
+- `~/clawd/templates/feedback-widget-template.md`
+- `~/clawd/templates/donation-widget-template.md`
+- `~/clawd/templates/seo-i18n-template.md`
 
 ## REGRA #26-27: ClawdBot e Arquivos
 
@@ -223,6 +233,7 @@ Antes de liberar para producao, verificar:
 7. **Apos deploy bem-sucedido, adicionar app ao Portfolio automaticamente**
 8. **Apps com IA: saida DEVE respeitar idioma selecionado**
 9. **GROQ_API_KEY deve ser configurada para apps com IA**
+10. **TODOS os apps devem ter DonationWidget (crypto) + FeedbackWidget**
 
 ---
-Ultima atualizacao: 2026-01-31 16:30
+Ultima atualizacao: 2026-01-31 19:15
