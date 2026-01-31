@@ -655,6 +655,486 @@ Todos os workflows estão em `.claude/plans/`:
 
 ---
 
+## REGRA #26: Sistema de Automação é ClawdBot (NÃO crontab)
+
+**CRÍTICO**: A automação do GarimDreaming roda no **ClawdBot**, NÃO no crontab do sistema.
+
+### Onde verificar jobs:
+```bash
+# ✅ CORRETO - ClawdBot jobs
+cat ~/.clawdbot/cron/jobs.json
+
+# ❌ ERRADO - Não usar
+crontab -l   # Retorna vazio, NÃO significa que não há automação!
+```
+
+### Estrutura ClawdBot:
+```
+~/.clawdbot/
+├── clawdbot.json        # Config principal
+├── cron/
+│   └── jobs.json        # TODOS os jobs agendados
+├── telegram/            # Estado do Telegram bot
+└── logs/                # Logs de execução
+```
+
+### Verificar se está rodando:
+```bash
+ps aux | grep clawdbot   # Deve mostrar clawdbot e clawdbot-gateway
+```
+
+### Jobs GarimDreaming (Seg-Sex):
+| Horário | Job ID | Descrição |
+|---------|--------|-----------|
+| 06:00 | garimdreaming-01-research | Pesquisa → Telegram 3 opções |
+| 07:00 | garimdreaming-02-define | Lê override.txt → escolhe |
+| 08:00 | garimdreaming-03-build | Inicia build |
+| 12:00 | garimdreaming-04-progress | Checkpoint |
+| 18:00 | garimdreaming-05-final | Deploy Railway |
+| 21:00 | garimdreaming-07-notify | Posts X + arquivo deploy |
+| 22:00 | garimdreaming-08-sync | Sync Supermemory |
+| Dom 18:00 | garimdreaming-weekly-report | Relatório semanal |
+
+### Telegram:
+- Bot: @diggest_X_YouYube_bot
+- User ID: 646397615
+- Responder com: "opção 2", "1 e 2", etc.
+
+### Arquivos de trabalho:
+```
+~/agent-projects/
+├── research/YYYY-MM-DD.md    # Pesquisa do dia
+├── override.txt              # Sua escolha (deletado após leitura)
+├── today-choice.json         # Escolha confirmada
+├── specs/                    # Specs dos produtos
+└── builds/                   # Builds em andamento
+```
+
+**NUNCA diga que "não há automação" sem verificar ~/.clawdbot/cron/jobs.json primeiro!**
+
+---
+
+## REGRA #27: Dois Sistemas de Arquivos
+
+Existem DOIS sistemas de arquivos separados:
+
+| Local | Propósito | Quem usa |
+|-------|-----------|----------|
+| `~/clawd/` | Knowledge base, templates, scripts | ClawdBot jobs |
+| `.claude/` (Bot-Ultra-Power) | Regras, skills, workflows | Claude Code sessões |
+
+### Sincronização necessária:
+Se criar/atualizar templates em `.claude/templates/`, copiar para `~/clawd/templates/` também.
+
+### Arquivos críticos em ~/clawd/:
+- `SOUL.md` - Personalidade do agente
+- `GUARDRAILS.md` - Regras de segurança
+- `KNOWLEDGE.md` - Base de conhecimento
+- `TOOLS.md` - Credenciais e ferramentas
+- `RESEARCH.md` - Metodologia de pesquisa
+- `templates/seo-i18n-template.md` - Template SEO (usado pelo job Build)
+
+### Jobs referenciam ~/clawd/, não .claude/:
+O job Build (08:00) lê `~/clawd/templates/seo-i18n-template.md`, não nosso `.claude/templates/i18n-setup.md`.
+
+**Se atualizar template de i18n:** Atualizar em AMBOS os lugares.
+
+---
+
+## REGRA #28: STATUS DE IMPLEMENTAÇÃO - Jobs ClawdBot
+
+**CRÍTICO**: Esta seção documenta o que REALMENTE está nos jobs vs. o que está apenas documentado.
+
+### ✅ IMPLEMENTADO NOS JOBS (funciona automaticamente):
+
+| Horário | Job | O que faz |
+|---------|-----|-----------|
+| 06:00 | Research | Pesquisa tendências, envia 3 opções no Telegram |
+| 07:00 | Define | Lê override.txt, cria spec do produto escolhido |
+| 08:00 | Build | Cria app com Next.js + next-intl + FeedbackWidget |
+| 12:00 | Progress | Checkpoint do build |
+| 18:00 | Final | Deploy no Railway (railway up) |
+| 21:00 | Report | Posts no X em 3 idiomas, cria arquivo de deploy |
+| 22:00 | Sync | Sync knowledge base → Supermemory |
+| Dom 18:00 | Weekly | Relatório semanal de performance |
+
+### ✅ RECÉM IMPLEMENTADO (2026-01-31):
+
+| Workflow | Job | Status |
+|----------|-----|--------|
+| **QA com Playwright** | garimdreaming-06-qa (19:00) | ✅ CRIADO |
+| **GSC via Playwright** | garimdreaming-05-final (18:00) | ✅ ADICIONADO |
+| **Verificar texto hardcoded** | garimdreaming-06-qa (19:00) | ✅ INCLUÍDO |
+| **Testar responsividade** | garimdreaming-06-qa (19:00) | ✅ INCLUÍDO |
+| **Testar funcionalidades** | garimdreaming-06-qa (19:00) | ✅ INCLUÍDO |
+| **Sync Dashboard** | garimdreaming-07-notify (21:00) | ✅ ADICIONADO |
+| **Sistema de Gates** | Todos os jobs | ✅ IMPLEMENTADO (REGRA #29) |
+
+### 🔧 IMPLEMENTAÇÃO COMPLETA (2026-01-31):
+
+1. **Job QA (19:00)** - garimdreaming-06-qa ✅
+   - Usa Playwright MCP para testar cada URL
+   - Verifica 3 locales (/pt-BR, /en-US, /es)
+   - Verifica responsividade (mobile 375x667)
+   - Verifica API stats funciona
+   - Verifica texto hardcoded
+   - Cria gate em ~/agent-projects/gates/YYYY-MM-DD-qa.json
+
+2. **GSC no Job Final (18:00)** - garimdreaming-05-final ✅
+   - Após deploy OK, abre GSC via Playwright
+   - Submete sitemap.xml
+   - Cria gate em ~/agent-projects/gates/YYYY-MM-DD-build.json
+
+3. **Sync Dashboard no Job Report (21:00)** - garimdreaming-07-notify ✅
+   - Verifica qa-gate antes de postar
+   - Após posts no X, chama API de sync
+   - `curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"`
+
+### ✅ CONSEQUÊNCIA AGORA:
+
+Com sistema de gates, apps com problemas são BLOQUEADOS:
+- ❌ Build falha → QA não roda
+- ❌ QA falha → Posts no X bloqueados
+- ✅ Qualidade garantida antes de publicar
+
+**LEMBRE-SE**: Documentar algo aqui NÃO significa que funciona. Sempre verifique se o job EXISTE em `~/.clawdbot/cron/jobs.json`.
+
+---
+
+## REGRA #29: Sistema de Gates - Bloqueio de Fases com Erros
+
+**CRÍTICO**: Nenhuma fase pode prosseguir se a fase anterior tiver erros.
+
+### Arquivos de Gate:
+```
+~/agent-projects/gates/
+├── YYYY-MM-DD-build.json     # Gate do Build (18:00)
+├── YYYY-MM-DD-qa.json        # Gate do QA (19:00)
+└── YYYY-MM-DD-report.json    # Gate do Report (21:00)
+```
+
+### Estrutura de cada Gate:
+```json
+{
+  "date": "YYYY-MM-DD",
+  "phase": "build|qa|report",
+  "passed": true|false,
+  "timestamp": "ISO8601",
+  "apps": [
+    {
+      "name": "AppName",
+      "status": "PASS|FAIL",
+      "errors": ["lista de erros se houver"]
+    }
+  ],
+  "blockers": ["erros críticos que impedem prosseguir"]
+}
+```
+
+### Fluxo com Gates:
+
+```
+Build (18:00)
+    ↓
+    └── Cria ~/agent-projects/gates/YYYY-MM-DD-build.json
+        ├── passed: true → QA pode rodar
+        └── passed: false → QA não roda, notifica erro
+
+QA (19:00)
+    ↓
+    ├── Verifica build-gate primeiro
+    │   └── Se build falhou → PARA, notifica "Build falhou, QA bloqueado"
+    └── Cria ~/agent-projects/gates/YYYY-MM-DD-qa.json
+        ├── passed: true → Report pode rodar
+        └── passed: false → Report não posta no X
+
+Report (21:00)
+    ↓
+    ├── Verifica qa-gate primeiro
+    │   └── Se QA falhou → NÃO posta no X, só cria arquivo
+    └── Cria ~/agent-projects/gates/YYYY-MM-DD-report.json
+```
+
+### Verificação de Gate (código padrão):
+```bash
+# No início de cada job, verificar gate anterior
+GATE_FILE=~/agent-projects/gates/$(date +%Y-%m-%d)-[fase-anterior].json
+if [ -f "$GATE_FILE" ]; then
+  PASSED=$(cat "$GATE_FILE" | jq -r '.passed')
+  if [ "$PASSED" = "false" ]; then
+    echo "❌ BLOQUEADO: Fase anterior falhou"
+    # Notificar e sair
+    exit 1
+  fi
+fi
+```
+
+### Desbloquear Manualmente:
+Se precisar forçar prosseguimento após correção:
+```bash
+# Atualizar gate manualmente
+echo '{"date":"YYYY-MM-DD","phase":"qa","passed":true,"timestamp":"'$(date -Iseconds)'","apps":[],"blockers":[]}' > ~/agent-projects/gates/YYYY-MM-DD-qa.json
+```
+
+### Consequência:
+- **Melhor**: App com bug não é postado no X
+- **Trade-off**: Atrasa o fluxo até correção
+- **Decisão**: Qualidade > Velocidade
+
+---
+
+## REGRA #30: FLUXO COMPLETO GARIMDREAMING (NUNCA ESQUECER!)
+
+**⚠️ CRÍTICO**: Este é o fluxo REAL que roda automaticamente via ClawdBot. SIGA SEMPRE.
+
+### Visão Geral - Segunda a Sexta
+
+| Horário | Job ID | O que faz |
+|---------|--------|-----------|
+| 06:00 | garimdreaming-01-research | Pesquisa tendências → Telegram 3 opções |
+| 07:00 | garimdreaming-02-define | Lê override → escolhe produto |
+| 08:00 | garimdreaming-03-build | Build Next.js + i18n + Feedback |
+| 12:00 | garimdreaming-04-progress | Checkpoint do build |
+| 18:00 | garimdreaming-05-final | Deploy Railway + GSC + build-gate |
+| 19:00 | garimdreaming-06-qa | Testes Playwright + qa-gate |
+| 21:00 | garimdreaming-07-notify | Posts X + Sync Dashboard |
+| 22:00 | garimdreaming-08-sync | Sync Supermemory |
+| Dom 18:00 | garimdreaming-weekly-report | Relatório semanal |
+
+---
+
+### 06:00 - RESEARCH
+
+**Ações:**
+1. Lê `~/clawd/RESEARCH.md`
+2. Deep research com web_search (OECD, Gartner, Product Hunt, HN, Reddit)
+3. 3 mercados: EN, PT-BR, ES
+4. Scoring: Pain(3x) + Pay(3x) + Build(2x) + Diff(1x) + Market(1x)
+5. Salva `~/agent-projects/research/YYYY-MM-DD.md`
+6. Telegram: 3 opções rankeadas
+
+**Resposta do usuário (até 07:00):**
+- "opção 2" → trocar
+- "1 e 2" → dual MVP
+- Sem resposta → opção 1
+
+---
+
+### 07:00 - DEFINE
+
+**Ações:**
+1. Lê `~/agent-projects/override.txt` (se existir)
+2. Deleta override.txt após ler
+3. Cria `~/agent-projects/today-choice.json`
+4. Cria spec em `~/agent-projects/specs/YYYY-MM-DD-[slug].md`
+
+---
+
+### 08:00 - BUILD
+
+**Leitura OBRIGATÓRIA:**
+- `~/clawd/templates/seo-i18n-template.md`
+- `~/clawd/templates/feedback-widget-template.md`
+
+**Estrutura criada:**
+```
+app/[locale]/layout.tsx    ← generateMetadata + hreflang
+app/[locale]/page.tsx      ← FeedbackWidget no footer
+app/api/track/route.ts     ← Tracking
+app/api/stats/route.ts     ← Stats para dashboard
+app/api/feedback/route.ts  ← Feedback
+components/FeedbackWidget.tsx
+i18n/routing.ts + request.ts
+middleware.ts
+messages/pt-BR.json, en-US.json, es.json
+```
+
+**Checklist:**
+- [ ] generateMetadata() com traduções
+- [ ] alternates.languages (pt-BR, en-US, es, x-default)
+- [ ] FeedbackWidget no footer
+- [ ] Google verification tag
+
+---
+
+### 12:00 - PROGRESS
+
+Checkpoint: verifica se build está no caminho.
+
+---
+
+### 18:00 - FINAL + DEPLOY + GSC
+
+**Deploy Railway:**
+```bash
+railway init --name [slug]
+railway up --detach
+railway domain
+curl [URL]  # deve retornar 200
+```
+
+**SEO:**
+- Verifica sitemap.ts
+- Verifica Google verification tag
+- Testa /sitemap.xml
+
+**GSC via Playwright:**
+```
+browser_navigate: https://search.google.com/search-console
+# Submete sitemap.xml
+```
+
+**CRIA GATE:**
+```bash
+echo '{"passed":true/false,...}' > ~/agent-projects/gates/YYYY-MM-DD-build.json
+```
+
+---
+
+### 19:00 - QA AUTOMATIZADO
+
+**PRIMEIRO: Verifica build-gate**
+- Se build falhou → QA BLOQUEADO, para aqui
+
+**Testes Playwright:**
+
+1. **Locales (3 URLs):**
+   - /pt-BR, /en-US, /es devem carregar
+
+2. **Texto hardcoded:**
+   - /pt-BR não pode ter "Submit", "Loading" (inglês)
+   - /en-US não pode ter português
+
+3. **Mobile:**
+   - Resize 375x667, layout não quebra
+
+4. **API Stats:**
+   - /api/stats?secret=... retorna JSON
+
+5. **CTA:**
+   - Botão principal funciona
+
+**CRIA GATE:**
+```bash
+echo '{"passed":true/false,...}' > ~/agent-projects/gates/YYYY-MM-DD-qa.json
+```
+
+---
+
+### 21:00 - REPORT + X POSTS
+
+**PRIMEIRO: Verifica qa-gate**
+- Se QA falhou → NÃO POSTA NO X
+
+**Se QA passou:**
+1. Posts em 3 idiomas (EN, PT, ES)
+2. Cria `~/clawd/deploys/deploy-[slug]-DDMMAAAA.md`
+3. Sync Dashboard:
+   ```bash
+   curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+   ```
+
+---
+
+### 22:00 - SYNC
+
+Sincroniza knowledge base → Supermemory (silencioso).
+
+---
+
+### Domingo 18:00 - WEEKLY REPORT
+
+Relatório semanal com recomendações:
+- 🚀 SCALE (4.0+)
+- 📈 GROW (3.0-3.9)
+- 👀 MONITOR (2.0-2.9)
+- 🔄 PIVOT (1.0-1.9)
+- 🌙 SUNSET (<1.0)
+
+---
+
+### Diagrama de Gates
+
+```
+Build (18:00)
+    │
+    ▼
+┌─────────────────┐
+│ build-gate.json │
+│ passed: ?       │
+└────────┬────────┘
+         │
+         ▼
+    passed=false? ──────► ❌ QA BLOQUEADO
+         │
+         ▼ (true)
+QA (19:00)
+    │
+    ▼
+┌─────────────────┐
+│ qa-gate.json    │
+│ passed: ?       │
+└────────┬────────┘
+         │
+         ▼
+    passed=false? ──────► ❌ POSTS BLOQUEADOS
+         │
+         ▼ (true)
+Report (21:00)
+    │
+    ▼
+✅ Posta no X
+✅ Sync Dashboard
+```
+
+---
+
+### Diretórios Críticos
+
+| Diretório | Conteúdo |
+|-----------|----------|
+| `~/.clawdbot/cron/jobs.json` | Jobs do ClawdBot (FONTE DA VERDADE) |
+| `~/agent-projects/research/` | Pesquisas diárias |
+| `~/agent-projects/specs/` | Specs de produtos |
+| `~/agent-projects/builds/` | Código fonte |
+| `~/agent-projects/gates/` | Arquivos de gate |
+| `~/agent-projects/qa-results/` | Resultados QA |
+| `~/clawd/deploys/` | Arquivos de deploy |
+| `~/clawd/templates/` | Templates (lidos pelos jobs) |
+
+---
+
+### Comandos Úteis
+
+```bash
+# Ver jobs ativos
+cat ~/.clawdbot/cron/jobs.json | jq '.jobs[] | select(.enabled==true) | {name, schedule: .schedule.expr}'
+
+# Ver gates de hoje
+cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json
+
+# Desbloquear manualmente
+echo '{"date":"'$(date +%Y-%m-%d)'","phase":"qa","passed":true,"timestamp":"'$(date -Iseconds)'","apps":[],"blockers":[]}' > ~/agent-projects/gates/$(date +%Y-%m-%d)-qa.json
+
+# Sync dashboard manualmente
+curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+
+# Ver se ClawdBot está rodando
+ps aux | grep clawdbot
+```
+
+---
+
+### ⚠️ LEMBRETES CRÍTICOS
+
+1. **Jobs rodam Seg-Sex apenas** (não rodam fim de semana)
+2. **ClawdBot é o sistema de automação** (NÃO crontab)
+3. **Templates ficam em ~/clawd/** (NÃO em .claude/)
+4. **Gates bloqueiam próxima fase** se passed=false
+5. **Qualidade > Velocidade** - melhor atrasar que postar com bug
+
+---
+
 ## REGRA #22: Documentar Ações ao Commitar
 
 **OBRIGATORIO**: Ao fazer QUALQUER commit, adicionar entrada no Historico de Ações abaixo.
@@ -753,4 +1233,148 @@ Formato:
 
 ---
 
-Ultima atualizacao: 2026-01-31 00:55
+### 2026-01-31 - Documentação ClawdBot + Correção de Erro
+
+**Problema**: Claude verificou `crontab -l` em vez de `~/.clawdbot/cron/jobs.json` e disse que não havia automação.
+
+**Causa**: Falta de documentação sobre onde fica a automação.
+
+**Solução**:
+1. Adicionada REGRA #26: Sistema de Automação é ClawdBot
+2. Adicionada REGRA #27: Dois Sistemas de Arquivos
+3. Documentado estrutura completa do ClawdBot
+4. Documentado diferença entre ~/clawd/ e .claude/
+
+**Status da Automação (confirmado funcionando)**:
+- ClawdBot rodando (PID ativo)
+- 11 jobs configurados (7 ativos para GarimDreaming)
+- Última execução: 2026-01-30 (sexta-feira)
+- Próxima execução: 2026-02-02 (segunda-feira)
+- Jobs não rodam fim de semana (Seg-Sex apenas)
+
+**GAPs identificados**:
+- Rating/Feedback system NÃO está nos jobs do ClawdBot
+- Templates de .claude/ não são lidos pelos jobs (usam ~/clawd/)
+
+---
+
+### 2026-01-31 - Sincronização Templates + Atualização ClawdBot Jobs
+
+**Problema**: Templates de i18n e Rating/Feedback existiam em .claude/ mas não eram usados pelos jobs do ClawdBot (que leem ~/clawd/).
+
+**Solução**:
+1. **Atualizado** `~/clawd/templates/seo-i18n-template.md`:
+   - Adicionado setup completo de next-intl (routing.ts, request.ts, middleware.ts)
+   - Adicionado estrutura [locale] folder
+   - Adicionado traduções de Feedback.*
+   - Referência para feedback-widget-template.md
+
+2. **Criado** `~/clawd/templates/feedback-widget-template.md`:
+   - Componente FeedbackWidget.tsx completo
+   - API /api/feedback/route.ts
+   - Instruções de uso e integração
+   - Checklist de implementação
+
+3. **Atualizado** job `garimdreaming-03-build` em `~/.clawdbot/cron/jobs.json`:
+   - Adicionado leitura obrigatória de feedback-widget-template.md
+   - Adicionado FeedbackWidget.tsx e /api/feedback na estrutura
+   - Atualizado checklist com verificação de FeedbackWidget
+   - Mensagem de conclusão inclui status do feedback
+
+**Resultado**: A partir de segunda-feira (02/02), os novos apps terão automaticamente:
+- i18n com next-intl (PT-BR, EN-US, ES)
+- generateMetadata() com traduções
+- hreflang correto
+- FeedbackWidget no footer
+- API de feedback integrada
+
+**GAPs resolvidos:**
+- ✅ Rating/Feedback agora está nos jobs
+- ✅ Templates sincronizados entre .claude/ e ~/clawd/
+- ✅ Job Build atualizado com instruções completas
+
+---
+
+### 2026-01-31 - Documentação de GAPs + REGRA #28 + Implementação Completa
+
+**Problema**: Claude se perdia porque não sabia o que REALMENTE estava implementado vs. apenas documentado.
+
+**Causa**: Workflows documentados (REGRA #2, #20) nunca foram transformados em jobs ClawdBot.
+
+**Solução Completa**:
+
+1. **REGRA #28**: Status de Implementação - Jobs ClawdBot
+   - Tabela clara do que funciona vs. o que falta
+
+2. **REGRA #29**: Sistema de Gates - Bloqueio de Fases com Erros
+   - Gates em ~/agent-projects/gates/
+   - Cada fase cria um arquivo JSON com passed: true/false
+   - Próxima fase verifica gate anterior antes de rodar
+
+3. **Job QA Criado** (19:00) - garimdreaming-06-qa:
+   - Verifica gate de build primeiro
+   - Testa 3 locales com Playwright
+   - Verifica texto hardcoded
+   - Verifica responsividade mobile
+   - Verifica API stats
+   - Cria gate de QA
+
+4. **Job Final Atualizado** (18:00) - garimdreaming-05-final:
+   - Adicionado GSC via Playwright
+   - Cria gate de build no final
+
+5. **Job Report Atualizado** (21:00) - garimdreaming-07-notify:
+   - Verifica gate de QA antes de postar no X
+   - Adicionado sync de dashboard
+   - Se QA falhou, NÃO posta no X
+
+**Fluxo Atual com Gates**:
+```
+Build (18:00) → build-gate
+      ↓
+QA (19:00) [verifica build-gate] → qa-gate
+      ↓
+Report (21:00) [verifica qa-gate] → posts X (se OK)
+```
+
+**Resultado**: Sistema de gates implementado - apps com bugs são bloqueados antes de ir pro X.
+
+---
+
+### 2026-01-31 - REGRA #30: Fluxo Completo Documentado
+
+**Problema**: Claude se perdia no fluxo, esquecia etapas, não seguia o processo.
+
+**Solução**: Criada REGRA #30 com documentação COMPLETA de todo o fluxo:
+
+1. **Visão geral** - Tabela com todos os 9 jobs e horários
+2. **Detalhes de cada job** - O que faz, ações, outputs
+3. **Diagrama de Gates** - Visual do fluxo de bloqueio
+4. **Diretórios críticos** - Onde fica cada coisa
+5. **Comandos úteis** - Para debug e desbloqueio manual
+6. **Lembretes críticos** - 5 pontos que NUNCA esquecer
+
+**Conteúdo da REGRA #30:**
+- 06:00 Research - Pesquisa + Telegram
+- 07:00 Define - Override + Spec
+- 08:00 Build - Next.js + i18n + Feedback
+- 12:00 Progress - Checkpoint
+- 18:00 Final - Deploy + GSC + build-gate
+- 19:00 QA - Playwright + qa-gate
+- 21:00 Report - Posts X + Sync
+- 22:00 Sync - Supermemory
+- Dom Weekly - Relatório semanal
+
+**Arquivos atualizados:**
+- `~/.clawdbot/cron/jobs.json` - Jobs com gates
+- `.claude/CLAUDE.md` - REGRA #28, #29, #30
+
+**Diretórios criados:**
+- `~/agent-projects/gates/` - Arquivos de gate
+- `~/agent-projects/qa-results/` - Resultados QA
+
+**Resultado**: Documentação completa no CLAUDE.md - Claude nunca mais vai se perder.
+
+---
+
+Ultima atualizacao: 2026-01-31 08:45
