@@ -1135,6 +1135,61 @@ ps aux | grep clawdbot
 
 ---
 
+## REGRA #31: Chrome Anti-Suspensão para Playwright
+
+**CRÍTICO**: Sem estas configurações, Playwright falha quando tela está bloqueada.
+
+### Problema:
+Quando tela do Mac está bloqueada, Chrome entra em suspensão e Playwright dá timeout:
+```
+Network.enable timed out. Increase the 'protocolTimeout' setting
+```
+
+### Solução Implementada:
+
+**1. App Nap Desativado:**
+```bash
+defaults write com.google.Chrome NSAppSleepDisabled -bool YES
+```
+
+**2. LaunchAgent com Flags Anti-Suspensão:**
+```
+~/Library/LaunchAgents/com.garimdreaming.chrome.plist
+```
+
+Flags incluídas:
+- `--disable-background-timer-throttling`
+- `--disable-backgrounding-occluded-windows`
+- `--disable-renderer-backgrounding`
+- `--remote-debugging-port=9222`
+- `KeepAlive=true`
+
+**3. LaunchAgent para App Nap no Boot:**
+```
+~/Library/LaunchAgents/com.garimdreaming.setup.plist
+```
+
+### Verificar se está funcionando:
+```bash
+# Chrome rodando com flags
+ps aux | grep "Chrome.*9222"
+
+# App Nap desativado
+defaults read com.google.Chrome NSAppSleepDisabled  # deve retornar 1
+
+# LaunchAgents carregados
+launchctl list | grep garimdreaming
+```
+
+### Se Playwright der timeout:
+1. Verificar se Chrome está rodando: `ps aux | grep Chrome`
+2. Recarregar LaunchAgent: `launchctl load ~/Library/LaunchAgents/com.garimdreaming.chrome.plist`
+3. Verificar App Nap: `defaults read com.google.Chrome NSAppSleepDisabled`
+
+**Documentação completa:** `~/clawd/docs/solucao-timeout-chrome.md`
+
+---
+
 ## REGRA #22: Documentar Ações ao Commitar
 
 **OBRIGATORIO**: Ao fazer QUALQUER commit, adicionar entrada no Historico de Ações abaixo.
@@ -1377,4 +1432,27 @@ Report (21:00) [verifica qa-gate] → posts X (se OK)
 
 ---
 
-Ultima atualizacao: 2026-01-31 08:45
+### 2026-01-31 - REGRA #31: Chrome Anti-Suspensão
+
+**Problema**: Playwright dá timeout quando tela do Mac está bloqueada.
+
+**Causa**: App Nap do macOS suspende Chrome em background.
+
+**Solução Aplicada**:
+1. Desativado App Nap: `defaults write com.google.Chrome NSAppSleepDisabled -bool YES`
+2. LaunchAgent com flags anti-suspensão já existia (`com.garimdreaming.chrome.plist`)
+3. Carregado LaunchAgent
+4. Copiado documentação para `~/clawd/docs/solucao-timeout-chrome.md`
+5. Criada REGRA #31 no CLAUDE.md
+
+**Flags no Chrome:**
+- `--disable-background-timer-throttling`
+- `--disable-backgrounding-occluded-windows`
+- `--disable-renderer-backgrounding`
+- `--remote-debugging-port=9222`
+
+**Resultado**: Chrome não vai suspender com tela bloqueada.
+
+---
+
+Ultima atualizacao: 2026-01-31 08:50
