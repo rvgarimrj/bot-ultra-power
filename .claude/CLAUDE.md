@@ -4,236 +4,324 @@
 *No recent activity*
 </claude-mem-context>
 
-# Bot-Ultra-Power - Regras Mestras
+# GarimDreaming - Sistema Autonomo de Build de Apps
 
-## REGRA #1: Comunicacao
-- SEMPRE informe o que esta fazendo antes de fazer
-- SEMPRE reporte resultados apos cada acao
-- SE algo falhar, pare e reporte imediatamente
+## VISAO GERAL
 
-## REGRA #2: Deploy de Apps - 7 Fases
+GarimDreaming e um agente autonomo que pesquisa tendencias, define produtos, builda apps e faz deploy automaticamente de Segunda a Sabado. O sistema roda via **ClawdBot** (NAO crontab).
+
+**Missao:** Buildar 1 app por dia que resolve uma dor real, com i18n, feedback e doacoes.
+
+---
+
+## FLUXO DIARIO AUTOMATIZADO (Seg-Sab)
+
 ```
-0. INICIALIZACAO - Verificar diretorio, criar status
-1. BUILD - npm run build
-2. SEO - sitemap.ts, robots.ts, metadata
-3. DEPLOY - railway up, capturar URL
-4. TESTE - Playwright, screenshots
-5. GSC - Verificar sitemap processado
-6. X/TWITTER - Posts em 3 idiomas
-7. FINALIZACAO - Sync dashboard
+06:00 │ RESEARCH    │ Pesquisa tendencias (Product Hunt, HN, Twitter)
+      │             │ -> Envia TOP 3 opcoes no Telegram
+      │             │ -> Usuario pode responder ate 07:00 para mudar
+      │
+07:00 │ DEFINE      │ Le resposta do usuario (override.txt)
+      │             │ -> Cria spec do produto escolhido
+      │             │ -> Confirma no Telegram
+      │
+08:00 │ BUILD       │ Cria projeto Next.js completo:
+      │             │ -> i18n (pt-BR, en-US, es)
+      │             │ -> FeedbackWidget no footer
+      │             │ -> DonationWidget no hero
+      │             │ -> Analytics (/api/track, /api/stats)
+      │             │ -> SEO (sitemap.ts, robots.ts, metadata)
+      │
+12:00 │ PROGRESS    │ Checkpoint - verifica se build esta OK
+      │
+18:00 │ FINAL       │ Deploy no Railway + GSC + Cria build-gate
+      │             │ -> Se falhar: passed=false, bloqueia QA
+      │
+19:00 │ QA          │ Testes Playwright (locales, mobile, API)
+      │             │ -> Verifica build-gate primeiro
+      │             │ -> Se falhar: passed=false, bloqueia posts
+      │
+21:00 │ NOTIFY      │ Posts no X (3 idiomas) + Sync Dashboard
+      │             │ -> Verifica qa-gate primeiro
+      │             │ -> Se QA falhou: NAO posta
+      │
+22:00 │ SYNC        │ Sincroniza knowledge base com Supermemory
 ```
 
-## REGRA #3-4: Pre-Deploy e Status
-- Verificar login X/Twitter e GSC antes de postar
-- Manter `~/clawd/deploys/[DATA]-status.md` atualizado
+**Domingo 18:00:** Weekly Report (analise de performance semanal)
 
-## REGRA #5-7: Agentes, Skills e Comandos
-Ver arquivos em `.claude/agents/`, `.claude/skills/`, `.claude/commands/`
+---
 
-## REGRA #8: Tech Stack
-Next.js 15, TypeScript, Tailwind, **Neon** (banco), Railway, Playwright, next-intl
+## ESTRUTURA OBRIGATORIA DE CADA APP
 
-## REGRA #9: Locales
-pt-BR (primario), en-US (global), es (LATAM), fr (Europa), zh-CN (Asia)
+Todo app buildado DEVE ter:
 
-## URLs de Producao
+```
+app/
+├── [locale]/
+│   ├── layout.tsx          # generateMetadata com i18n
+│   └── page.tsx            # DonationWidget no hero + FeedbackWidget no footer
+├── api/
+│   ├── track/route.ts      # Analytics de views
+│   ├── stats/route.ts      # Endpoint de estatisticas
+│   └── feedback/route.ts   # Salva feedback no Neon
+├── sitemap.ts              # URLs por locale
+└── robots.ts               # Permite indexacao
 
-| App | URL |
-|-----|-----|
-| WikiScroll | https://wikiscroll-production.up.railway.app |
-| ClipGenius | https://clipgenius-production.up.railway.app |
-| BrandPulse AI | https://brandpulse-ai-production-2b82.up.railway.app |
-| ContentAtomizer | https://contentatomizer-production.up.railway.app |
-| FocusFlow | https://focusflow-production-2e04.up.railway.app |
-| PropostaAI | https://proposta-ai-production.up.railway.app |
-| ClipToAll | https://cliptoall-v2-production.up.railway.app |
-| **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app |
-| **Portfolio** | https://garimdreaming-portfolio-production.up.railway.app |
+components/
+├── DonationWidget.tsx      # Crypto donations (Solana, ETH, BTC)
+└── FeedbackWidget.tsx      # Rating + sugestao
 
-## REGRA #16-19: Dashboard GarimDreaming
+messages/
+├── pt-BR.json
+├── en-US.json
+└── es.json
+
+i18n/
+├── routing.ts
+└── request.ts
+```
+
+---
+
+## TEMPLATES OBRIGATORIOS
+
+Antes de buildar, SEMPRE ler:
+
+| Template | Caminho | Conteudo |
+|----------|---------|----------|
+| SEO + i18n | `~/clawd/templates/seo-i18n-template.md` | Metadata, alternates, hreflang |
+| Feedback | `~/clawd/templates/feedback-widget-template.md` | Componente + API Neon |
+| Doacao | `~/clawd/templates/donation-widget-template.md` | Crypto wallets + UI |
+| QA | `~/clawd/templates/qa-checklist-template.md` | Checklist completo |
+| IA | `~/clawd/templates/ai-app-template.md` | Apps com Groq/IA |
+
+---
+
+## CRYPTO WALLETS (DonationWidget)
+
+```
+Solana (USDT/USDC/SOL): HET7XZpgcsBCvmkWEmors7zysvc2eKSCnDbL8YVmFXiQ
+Ethereum (USDT/USDC/ETH): 0x76d56857Df003331462b0369caA40DB04d4ECaa1
+Bitcoin Taproot: bc1pgfcn9zp4e994e4575vehn5ppl5ywd63cvm0lsaejyakrgdc2h4pshct2u5
+Bitcoin SegWit: bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav
+```
+
+---
+
+## URLs DE PRODUCAO
+
+| App | URL | Stats |
+|-----|-----|-------|
+| WikiScroll | https://wikiscroll-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| ClipGenius | https://clipgenius-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| BrandPulse AI | https://brandpulse-ai-production-2b82.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| ContentAtomizer | https://contentatomizer-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| FocusFlow | https://focusflow-production-2e04.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| PropostaAI | https://proposta-ai-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| ClipToAll | https://cliptoall-v2-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| **Portfolio** | https://garimdreaming-portfolio-production.up.railway.app | - |
+| **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app | - |
+
+---
+
+## SISTEMA DE GATES
+
+Gates sao arquivos JSON que bloqueiam a proxima fase se a anterior falhou.
+
 ```bash
-# Adicionar novo app
-curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps \
-  -H "Content-Type: application/json" -d '{"name":"[NAME]","slug":"[slug]","url":"[URL]"}'
+# Localizacao
+~/agent-projects/gates/YYYY-MM-DD-build.json
+~/agent-projects/gates/YYYY-MM-DD-qa.json
 
-# Sync (busca apps do banco automaticamente)
-curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+# Estrutura
+{
+  "date": "2026-01-31",
+  "phase": "build",
+  "passed": true,
+  "timestamp": "2026-01-31T18:30:00-03:00",
+  "apps": [{"name": "AppName", "status": "PASS", "url": "..."}],
+  "blockers": []
+}
 ```
 
-## REGRA #20-22: Portfolio GarimDreaming
+**Regras:**
+- `build-gate.passed = false` -> QA bloqueado
+- `qa-gate.passed = false` -> Posts no X bloqueados
 
-**URL:** https://garimdreaming-apps-production.up.railway.app
+---
 
-Apps sao armazenados no Neon Database (tabela `portfolio_apps`) e aparecem automaticamente.
+## COMANDOS UTEIS
 
-**Adicionar novo app ao portfolio (AUTOMATICO apos deploy):**
 ```bash
-# Via script
-APP_KEY="newapp" \
-APP_ICON="Rocket" \
-APP_COLOR="from-indigo-500 to-blue-600" \
-APP_GLOW="rgba(99, 102, 241, 0.3)" \
-APP_URL="https://newapp-production.up.railway.app" \
-APP_NAME_EN="NewApp" APP_TAGLINE_EN="Do amazing things" \
-APP_DESC_EN="Description here" APP_PAIN_EN="Solves X problem" \
-APP_NAME_PT="NovoApp" APP_TAGLINE_PT="Faca coisas incriveis" \
-APP_DESC_PT="Descricao aqui" APP_PAIN_PT="Resolve problema X" \
-APP_NAME_ES="NuevaApp" APP_TAGLINE_ES="Haz cosas increibles" \
-APP_DESC_ES="Descripcion aqui" APP_PAIN_ES="Resuelve problema X" \
-~/clawd/scripts/add-app-to-portfolio.sh
-
-# Via curl
-curl -X POST https://garimdreaming-apps-production.up.railway.app/api/add-app \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer garimdreaming-portfolio-2026" \
-  -d '{"key":"newapp","icon":"Rocket","color":"from-indigo-500 to-blue-600","glowColor":"rgba(99, 102, 241, 0.3)","url":"https://newapp.up.railway.app","translations":{"en-US":{"name":"NewApp","tagline":"Tagline","description":"Desc","pain":"Pain"},"pt-BR":{"name":"NovoApp","tagline":"Tagline","description":"Desc","pain":"Dor"},"es":{"name":"NuevaApp","tagline":"Tagline","description":"Desc","pain":"Dolor"}}}'
-
-# Listar apps
-curl "https://garimdreaming-apps-production.up.railway.app/api/add-app?secret=garimdreaming-portfolio-2026"
-```
-
-**Icones disponiveis:** Scroll, Scissors, Activity, Atom, Timer, FileText, FileType, Sparkles, Rocket, Brain, Palette, Music, Camera, Globe, Shield, Cpu
-
-## REGRA #23-25: i18n, Feedback e Doação (2026-01-31+)
-Novos apps DEVEM ter:
-- next-intl com rotas `[locale]/`
-- **FeedbackWidget** no footer
-- **DonationWidget** antes do footer (crypto donations)
-- API `/api/feedback` usando **NEON** (NAO Supabase!)
-
-**Crypto Wallets (DonationWidget):**
-- Solana (USDT/USDC/SOL): `HET7XZpgcsBCvmkWEmors7zysvc2eKSCnDbL8YVmFXiQ`
-- Ethereum (USDT/USDC/ETH): `0x76d56857Df003331462b0369caA40DB04d4ECaa1`
-- Bitcoin Taproot: `bc1pgfcn9zp4e994e4575vehn5ppl5ywd63cvm0lsaejyakrgdc2h4pshct2u5`
-- Bitcoin SegWit: `bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav`
-
-**Neon Connection:**
-```bash
-# Usar variavel de ambiente DATABASE_URL (configurada no Railway)
-# String de conexao em ~/clawd/.env
-```
-
-**Tabela:** `garimdreaming_feedback` (id, app_slug, rating, suggestion, session_id, created_at)
-
-**Templates:**
-- `~/clawd/templates/feedback-widget-template.md`
-- `~/clawd/templates/donation-widget-template.md`
-- `~/clawd/templates/seo-i18n-template.md`
-
-## REGRA #26-27: ClawdBot e Arquivos
-
-**Automacao via ClawdBot** (NAO crontab):
-```bash
-cat ~/.clawdbot/cron/jobs.json  # Ver jobs
-```
-
-**Dois sistemas de arquivos:**
-- `~/clawd/` - Templates e scripts (ClawdBot)
-- `.claude/` - Regras e skills (Claude Code)
-
-## REGRA #28-30: Jobs e Gates
-
-| Horario | Job | Acao |
-|---------|-----|------|
-| 06:00 | research | Pesquisa -> Telegram |
-| 07:00 | define | Override -> Spec |
-| 08:00 | build | Next.js + i18n + Feedback |
-| 12:00 | progress | Checkpoint |
-| 18:00 | final | Deploy + GSC + build-gate |
-| 19:00 | qa | Playwright + qa-gate |
-| 21:00 | notify | Posts X + Sync |
-| 22:00 | sync | Supermemory |
-
-**Sistema de Gates:**
-```
-~/agent-projects/gates/YYYY-MM-DD-[fase].json
-```
-- Se fase anterior falhou (passed:false), proxima fase BLOQUEADA
-- QA falhou -> NAO posta no X
-
-## REGRA #31: Chrome Anti-Suspensao
-```bash
-defaults write com.google.Chrome NSAppSleepDisabled -bool YES
-```
-LaunchAgent: `~/Library/LaunchAgents/com.garimdreaming.chrome.plist`
-
-## Diretorios Criticos
-
-| Diretorio | Conteudo |
-|-----------|----------|
-| `~/.clawdbot/cron/jobs.json` | Jobs ClawdBot |
-| `~/agent-projects/builds/` | Codigo fonte |
-| `~/agent-projects/gates/` | Arquivos de gate |
-| `~/clawd/deploys/` | Status de deploys |
-| `~/clawd/templates/` | Templates (ClawdBot) |
-
-## Comandos Uteis
-```bash
-# Jobs ativos
+# Ver jobs ativos do ClawdBot
 cat ~/.clawdbot/cron/jobs.json | jq '.jobs[] | select(.enabled==true) | .name'
 
-# Gates de hoje
+# Ver gates de hoje
 cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json
 
-# Sync dashboard
+# Sync dashboard manualmente
 curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 
-# ClawdBot rodando?
+# Verificar se ClawdBot esta rodando
 ps aux | grep clawdbot
+
+# Adicionar app ao portfolio
+curl -X POST https://garimdreaming-portfolio-production.up.railway.app/api/add-app \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer garimdreaming-portfolio-2026" \
+  -d '{"key":"slug","icon":"Rocket","color":"from-indigo-500 to-blue-600",...}'
+
+# Stats de um app
+curl "https://[app]-production.up.railway.app/api/stats?secret=garimdreaming-stats-2026&format=json"
 ```
 
-## REGRA #32-35: Apps com IA (Licoes Aprendidas 2026-01-31)
+---
 
-### #32: Idioma da Saida OBRIGATORIO
-Apps com IA DEVEM gerar saida no idioma selecionado pelo usuario:
+## TECH STACK
+
+- **Framework:** Next.js 15 + TypeScript
+- **Estilo:** Tailwind CSS
+- **i18n:** next-intl (pt-BR, en-US, es)
+- **Banco:** Neon PostgreSQL (NAO Supabase)
+- **Deploy:** Railway
+- **Testes:** Playwright MCP
+- **Automacao:** ClawdBot
+- **IA:** Groq (llama-3.3-70b-versatile)
+
+---
+
+## APPS COM IA - REGRAS ESPECIAIS
+
+Se o app usar IA (Groq), DEVE:
+
+1. **Respeitar idioma do usuario:**
 ```typescript
-// Frontend: SEMPRE enviar locale para API
-body: JSON.stringify({ input, platforms, locale })
+// Frontend envia locale
+body: JSON.stringify({ input, locale })
 
-// Backend: SEMPRE incluir idioma no prompt
-const outputLanguage = LANGUAGE_NAMES[locale] || 'Portuguese';
-const systemPrompt = `You MUST write ALL responses in ${outputLanguage}.`;
-const userPrompt = `... Generate content in ${outputLanguage}:`;
+// Backend inclui no prompt
+const lang = LANGUAGE_NAMES[locale] || 'Portuguese';
+const prompt = `You MUST write ALL responses in ${lang}.`;
 ```
 
-### #33: GROQ_API_KEY Obrigatoria
-Apps que usam IA DEVEM ter GROQ_API_KEY configurada no Railway:
+2. **Ter GROQ_API_KEY no Railway:**
 ```bash
-# Chave armazenada em ~/clawd/.env (NAO commitar!)
 railway variables set GROQ_API_KEY="$GROQ_API_KEY"
 ```
 
-### #34: Aviso de IA Gratuita
-Apps com IA DEVEM exibir banner informando que e IA basica para testes:
+3. **Exibir banner de aviso:**
 ```tsx
 <div className="bg-amber-50 border-b border-amber-200 py-2 text-center">
-  <p className="text-amber-800 text-sm">
-    IA basica para fins de teste. Resultados podem variar.
-  </p>
+  <p className="text-amber-800 text-sm">IA basica para fins de teste.</p>
 </div>
 ```
 
-### #35: QA de Apps com IA (Adicionar ao Gate de QA)
-Antes de liberar para producao, verificar:
-- [ ] Saida respeita idioma selecionado (testar pt-BR, en-US, es)
-- [ ] GROQ_API_KEY configurada no Railway
-- [ ] Banner de aviso de IA visivel
-- [ ] Transcrição de YouTube funciona (se aplicavel)
-- [ ] Prompts geram conteudo relevante (nao alucinacoes)
+4. **Modelo atual:** `llama-3.3-70b-versatile` (3.1 foi descontinuado)
 
-**Modelo Groq atual:** `llama-3.3-70b-versatile` (3.1 foi descontinuado)
+---
 
-## Lembretes Criticos
-1. Jobs rodam **Seg-Sab** (atualizado)
+## CHECKLIST PRE-DEPLOY
+
+### SEO + i18n
+- [ ] generateMetadata() com traducoes
+- [ ] alternates.languages com pt-BR, en-US, es, x-default
+- [ ] sitemap.ts com URLs por locale
+- [ ] robots.ts permitindo indexacao
+- [ ] Google verification tag
+
+### Widgets
+- [ ] DonationWidget.tsx no hero/area visivel
+- [ ] FeedbackWidget.tsx no footer
+- [ ] /api/feedback/route.ts conectado ao Neon
+- [ ] Traducoes em messages/*.json
+
+### Deploy
+- [ ] npm run build sem erros
+- [ ] railway up --detach
+- [ ] curl retorna 200
+- [ ] Sitemap acessivel (/sitemap.xml)
+
+### Pos-Deploy
+- [ ] Adicionar ao Portfolio (via API)
+- [ ] Sync Dashboard
+- [ ] Submeter sitemap no GSC
+
+---
+
+## DIRETORIOS CRITICOS
+
+| Diretorio | Conteudo |
+|-----------|----------|
+| `~/.clawdbot/cron/jobs.json` | Configuracao dos jobs |
+| `~/agent-projects/builds/` | Codigo fonte dos apps |
+| `~/agent-projects/gates/` | Arquivos de gate |
+| `~/agent-projects/specs/` | Specs dos produtos |
+| `~/agent-projects/research/` | Pesquisas diarias |
+| `~/clawd/deploys/` | Status de deploys |
+| `~/clawd/templates/` | Templates obrigatorios |
+| `~/clawd/.env` | Variaveis sensiveis (NAO commitar) |
+
+---
+
+## TROUBLESHOOTING
+
+### ClawdBot nao esta rodando
+```bash
+# Verificar processo
+ps aux | grep clawdbot
+
+# Se nao estiver rodando, iniciar manualmente
+# (geralmente inicia automatico via LaunchAgent)
+```
+
+### Deploy falhou no Railway
+```bash
+# Verificar logs
+railway logs
+
+# Verificar se tem servico duplicado
+railway status
+railway up --service [nome-do-servico] --detach
+```
+
+### GSC nao esta logado
+- O job de deploy vai notificar "GSC requer login manual"
+- Nao bloqueia o deploy, apenas a submissao do sitemap
+- Login manual: https://search.google.com/search-console
+
+### Gate bloqueou proxima fase
+```bash
+# Ver o que bloqueou
+cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json | jq '.blockers'
+
+# Corrigir o problema e recriar gate manualmente se necessario
+```
+
+---
+
+## REGRAS DE COMUNICACAO
+
+1. **SEMPRE** informe o que esta fazendo antes de fazer
+2. **SEMPRE** reporte resultados apos cada acao
+3. **SE** algo falhar, pare e reporte imediatamente
+4. Mensagens CURTAS (max 3 linhas no Telegram)
+5. NAO invente links - so reporte URLs testadas
+6. Qualidade > Velocidade
+
+---
+
+## LEMBRETES CRITICOS
+
+1. Jobs rodam **Seg-Sab** (domingo so tem Weekly Report)
 2. **ClawdBot** e o sistema de automacao (NAO crontab)
 3. Templates ficam em **~/clawd/** (NAO .claude/)
 4. Gates bloqueiam proxima fase se passed=false
 5. **Neon** para feedback, NAO Supabase
-6. Qualidade > Velocidade
-7. **Apos deploy bem-sucedido, adicionar app ao Portfolio automaticamente**
-8. **Apps com IA: saida DEVE respeitar idioma selecionado**
-9. **GROQ_API_KEY deve ser configurada para apps com IA**
-10. **TODOS os apps devem ter DonationWidget (crypto) + FeedbackWidget**
+6. Apos deploy, adicionar ao Portfolio automaticamente
+7. **TODOS** os apps devem ter DonationWidget + FeedbackWidget
+8. Apps com IA: GROQ_API_KEY + respeitar idioma + banner
 
 ---
-Ultima atualizacao: 2026-01-31 19:15
+
+Ultima atualizacao: 2026-01-31 22:50
