@@ -357,6 +357,7 @@ NAO paralelizar quando ha dependencias (ex: build antes de deploy).
 
 | App | URL | API Stats |
 |-----|-----|-----------|
+| WikiScroll | https://wikiscroll-production.up.railway.app | ✅ |
 | ClipGenius | https://clipgenius-production.up.railway.app | ✅ |
 | BrandPulse AI | https://brandpulse-ai-production-2b82.up.railway.app | ✅ |
 | ContentAtomizer | https://contentatomizer-production.up.railway.app | ✅ |
@@ -387,10 +388,10 @@ Este arquivo contem TUDO. Siga-o a risca. Sem desculpas.
 
 ## REGRA #16: Atualizar Dashboard Após Deploy
 
-Após QUALQUER deploy, SEMPRE adicionar/atualizar o app no dashboard:
+Após QUALQUER deploy de novo app, SEMPRE adicionar ao dashboard:
 
 ```bash
-# Adicionar novo app
+# 1. ADICIONAR NOVO APP (obrigatório para novos apps)
 curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps \
   -H "Content-Type: application/json" \
   -d '{
@@ -401,18 +402,15 @@ curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps 
     "score": [0-100]
   }'
 
-# Atualizar métricas
-curl -X PATCH https://garimdreaming-dashboard-production.up.railway.app/api/apps \
-  -H "Content-Type: application/json" \
-  -d '{
-    "slug": "[app-slug]",
-    "total_views": [X],
-    "week_views": [X],
-    "today_views": [X]
-  }'
+# 2. RODAR SYNC (atualiza métricas de TODOS os apps automaticamente)
+curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 ```
 
-**NUNCA esquecer de atualizar o dashboard!**
+**O sync agora busca apps do banco de dados automaticamente!**
+- Quando você adiciona um app via POST, ele será sincronizado automaticamente no próximo sync
+- NÃO precisa mais atualizar código quando adicionar novo app
+
+**NUNCA esquecer de adicionar novo app ao dashboard!**
 
 ---
 
@@ -423,12 +421,16 @@ URL: https://garimdreaming-dashboard-production.up.railway.app
 Apps registrados:
 | App | Slug | URL |
 |-----|------|-----|
+| WikiScroll | wikiscroll | https://wikiscroll-production.up.railway.app |
 | ClipGenius | clipgenius | https://clipgenius-production.up.railway.app |
 | BrandPulse AI | brandpulse-ai | https://brandpulse-ai-production-2b82.up.railway.app |
 | ContentAtomizer | contentatomizer | https://contentatomizer-production.up.railway.app |
 | FocusFlow | focusflow | https://focusflow-production-2e04.up.railway.app |
 | PropostaAI | propostaai | https://proposta-ai-production.up.railway.app |
 | ClipToAll | cliptoall | https://cliptoall-v2-production.up.railway.app |
+
+**IMPORTANTE**: O sync agora busca apps do banco de dados automaticamente!
+Não precisa mais atualizar código quando adicionar novo app.
 
 ---
 
@@ -456,6 +458,7 @@ Ao criar/deployar qualquer app, SEMPRE incluir:
 **Copiar de**: `~/agent-projects/builds/2026-01-29-clipgenius/src/app/api/`
 
 ### Apps COM API de Tracking:
+- WikiScroll ✓
 - ClipGenius ✓
 - ContentAtomizer ✓
 - BrandPulse AI ✓ (adicionado 2026-01-30)
@@ -578,6 +581,80 @@ curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=
 
 ---
 
+## REGRA #23: i18n OBRIGATÓRIO em Novos Apps (2026-01-31+)
+
+A partir de 31/01/2026, TODOS os novos apps DEVEM ter:
+
+1. **next-intl** instalado
+2. **Rotas** dentro de `app/[locale]/`
+3. **Traduções** em `messages/pt-BR.json`, `en-US.json`, `es.json`
+4. **generateMetadata()** com traduções dinâmicas
+5. **hreflang** com todas as locales + x-default
+6. **Sitemap multilíngue** gerando URLs por locale
+
+**Template completo:** `.claude/templates/i18n-setup.md`
+
+**VERIFICAR antes de deploy:**
+- [ ] URL `https://app/pt-BR` funciona
+- [ ] URL `https://app/en-US` funciona
+- [ ] URL `https://app/es` funciona
+- [ ] `<html lang>` muda conforme locale
+- [ ] `<title>` está traduzido
+- [ ] `<meta description>` está traduzido
+
+**Apps EXISTENTES:** Não serão modificados (mantêm inglês apenas)
+
+---
+
+## REGRA #24: Rating/Feedback OBRIGATÓRIO em Novos Apps (2026-01-31+)
+
+A partir de 31/01/2026, TODOS os novos apps DEVEM ter:
+
+1. **FeedbackWidget** no footer da página
+2. **API /api/feedback** para receber/consultar ratings
+3. **Estrelas 1-5** + campo de comentário opcional
+4. **Stats públicos** (contagem + média)
+
+**Plano completo:** `.claude/plans/rating-feedback-system.md`
+
+**Posicionamento:**
+```
+[... conteúdo do app ...]
+
+┌─────────────────────────────────────┐
+│ ✨ O que você achou dessa ideia?    │
+│ ☆ ☆ ☆ ☆ ☆                          │
+│ [Sua opinião...]                    │
+│ 💬 12 opiniões · ⭐ 4.2 média       │
+└─────────────────────────────────────┘
+
+[Footer]
+```
+
+**Dashboard:** Mostrará rating médio + score composto (views × 0.3 + rating × 0.7)
+
+**Apps EXISTENTES:** Não serão modificados
+
+---
+
+## REGRA #25: Workflows Documentados
+
+Todos os workflows estão em `.claude/plans/`:
+
+| Workflow | Arquivo | Horário |
+|----------|---------|---------|
+| Pesquisa | research-schedule-multilingual.md | 06:00-07:30 |
+| PRD | product-definition-workflow.md | 07:30-08:00 |
+| Build | build-workflow.md | 08:00-18:00 |
+| QA/Test | qa-test-workflow.md | 18:00-20:00 |
+| Deploy | (usar REGRA #2) | 20:00-21:00 |
+| Report | report-promote-workflow.md | 21:00-22:00 |
+
+**Templates:** `.claude/templates/`
+**Checklists:** `.claude/checklists/`
+
+---
+
 ## REGRA #22: Documentar Ações ao Commitar
 
 **OBRIGATORIO**: Ao fazer QUALQUER commit, adicionar entrada no Historico de Ações abaixo.
@@ -595,6 +672,54 @@ Formato:
 ---
 
 ## Historico de Ações
+
+### 2026-01-31 - Documentação Completa + i18n + Rating System
+
+**Contexto:** Usuário pediu para documentar o fluxo completo e criar o que estava faltando
+
+**Arquivos Criados:**
+1. `.claude/templates/prd-template.md` - Template de PRD
+2. `.claude/templates/i18n-setup.md` - Setup completo de i18n (NOVO)
+3. `.claude/checklists/qa-pre-deploy.md` - Checklist de QA
+4. `.claude/checklists/project-setup.md` - Checklist de setup
+5. `.claude/plans/build-workflow.md` - Workflow de build (atualizado com i18n)
+6. `.claude/plans/product-definition-workflow.md` - Workflow de PRD
+7. `.claude/plans/qa-test-workflow.md` - Workflow de QA
+8. `.claude/plans/report-promote-workflow.md` - Workflow de report
+9. `.claude/plans/social-media-guide.md` - Guia de redes sociais
+10. `.claude/plans/rating-feedback-system.md` - Sistema de rating (NOVO)
+
+**Novas Regras:**
+- REGRA #23: i18n OBRIGATÓRIO em novos apps
+- REGRA #24: Rating/Feedback OBRIGATÓRIO em novos apps
+- REGRA #25: Workflows documentados
+
+**Problema Identificado:** Apps existentes têm metadata apenas em inglês (não multilíngue)
+**Decisão:** Corrigir apenas em novos apps, manter existentes como estão
+
+**Resultado:** Fluxo completo de 06:00-22:00 documentado e pronto para amanhã
+
+---
+
+### 2026-01-31 - Correção Dashboard e Sync Dinâmico
+
+**Problema**: Dashboard mostrava apenas 6 apps e 8 views, mas WikiScroll (12 views) não estava incluído
+
+**Causa Raiz**: O sync route tinha lista hardcoded de apps - novos apps não eram sincronizados automaticamente
+
+**Solução**:
+1. Modificado `/api/sync/route.ts` para buscar apps do banco de dados dinamicamente
+2. Adicionado WikiScroll ao dashboard via POST /api/apps
+3. Corrigido URLs erradas no banco (BrandPulse AI, PropostaAI, ClipToAll)
+4. Deploy do dashboard atualizado
+
+**Mudança Importante**:
+- **ANTES**: Lista hardcoded de apps no sync route - precisava atualizar código manualmente
+- **AGORA**: Sync busca apps do banco de dados - novos apps são sincronizados automaticamente
+
+**Resultado**: 7/7 apps com 20 views da semana sincronizados corretamente
+
+---
 
 ### 2026-01-31 - Correção ClipToAll e Sync Completo
 
@@ -628,4 +753,4 @@ Formato:
 
 ---
 
-Ultima atualizacao: 2026-01-31
+Ultima atualizacao: 2026-01-31 00:55
