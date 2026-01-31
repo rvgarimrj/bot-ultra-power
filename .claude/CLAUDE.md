@@ -48,7 +48,7 @@ pt-BR (primario), en-US (global), es (LATAM), fr (Europa), zh-CN (Asia)
 | PropostaAI | https://proposta-ai-production.up.railway.app |
 | ClipToAll | https://cliptoall-v2-production.up.railway.app |
 | **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app |
-| **Portfolio** | https://garimdreaming-apps-production.up.railway.app |
+| **Portfolio** | https://garimdreaming-portfolio-production.up.railway.app |
 
 ## REGRA #16-19: Dashboard GarimDreaming
 ```bash
