@@ -48,6 +48,7 @@ pt-BR (primario), en-US (global), es (LATAM), fr (Europa), zh-CN (Asia)
 | PropostaAI | https://proposta-ai-production.up.railway.app |
 | ClipToAll | https://cliptoall-v2-production.up.railway.app |
 | **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app |
+| **Portfolio** | https://garimdreaming-apps-production.up.railway.app |
 
 ## REGRA #16-19: Dashboard GarimDreaming
 ```bash
@@ -59,6 +60,40 @@ curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps 
 curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 ```
 
+## REGRA #20-22: Portfolio GarimDreaming
+
+**URL:** https://garimdreaming-apps-production.up.railway.app
+
+Apps sao armazenados no Neon Database (tabela `portfolio_apps`) e aparecem automaticamente.
+
+**Adicionar novo app ao portfolio (AUTOMATICO apos deploy):**
+```bash
+# Via script
+APP_KEY="newapp" \
+APP_ICON="Rocket" \
+APP_COLOR="from-indigo-500 to-blue-600" \
+APP_GLOW="rgba(99, 102, 241, 0.3)" \
+APP_URL="https://newapp-production.up.railway.app" \
+APP_NAME_EN="NewApp" APP_TAGLINE_EN="Do amazing things" \
+APP_DESC_EN="Description here" APP_PAIN_EN="Solves X problem" \
+APP_NAME_PT="NovoApp" APP_TAGLINE_PT="Faca coisas incriveis" \
+APP_DESC_PT="Descricao aqui" APP_PAIN_PT="Resolve problema X" \
+APP_NAME_ES="NuevaApp" APP_TAGLINE_ES="Haz cosas increibles" \
+APP_DESC_ES="Descripcion aqui" APP_PAIN_ES="Resuelve problema X" \
+~/clawd/scripts/add-app-to-portfolio.sh
+
+# Via curl
+curl -X POST https://garimdreaming-apps-production.up.railway.app/api/add-app \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer garimdreaming-portfolio-2026" \
+  -d '{"key":"newapp","icon":"Rocket","color":"from-indigo-500 to-blue-600","glowColor":"rgba(99, 102, 241, 0.3)","url":"https://newapp.up.railway.app","translations":{"en-US":{"name":"NewApp","tagline":"Tagline","description":"Desc","pain":"Pain"},"pt-BR":{"name":"NovoApp","tagline":"Tagline","description":"Desc","pain":"Dor"},"es":{"name":"NuevaApp","tagline":"Tagline","description":"Desc","pain":"Dolor"}}}'
+
+# Listar apps
+curl "https://garimdreaming-apps-production.up.railway.app/api/add-app?secret=garimdreaming-portfolio-2026"
+```
+
+**Icones disponiveis:** Scroll, Scissors, Activity, Atom, Timer, FileText, FileType, Sparkles, Rocket, Brain, Palette, Music, Camera, Globe, Shield, Cpu
+
 ## REGRA #23-24: i18n e Feedback (2026-01-31+)
 Novos apps DEVEM ter:
 - next-intl com rotas `[locale]/`
@@ -66,8 +101,9 @@ Novos apps DEVEM ter:
 - API `/api/feedback` usando **NEON** (NAO Supabase!)
 
 **Neon Connection:**
-```
-postgresql://neondb_owner:npg_RWGXg4tjYl7s@ep-morning-lake-ahl1opii-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require
+```bash
+# Usar variavel de ambiente DATABASE_URL (configurada no Railway)
+# String de conexao em ~/clawd/.env
 ```
 
 **Tabela:** `garimdreaming_feedback` (id, app_slug, rating, suggestion, session_id, created_at)
@@ -136,13 +172,57 @@ curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=
 ps aux | grep clawdbot
 ```
 
+## REGRA #32-35: Apps com IA (Licoes Aprendidas 2026-01-31)
+
+### #32: Idioma da Saida OBRIGATORIO
+Apps com IA DEVEM gerar saida no idioma selecionado pelo usuario:
+```typescript
+// Frontend: SEMPRE enviar locale para API
+body: JSON.stringify({ input, platforms, locale })
+
+// Backend: SEMPRE incluir idioma no prompt
+const outputLanguage = LANGUAGE_NAMES[locale] || 'Portuguese';
+const systemPrompt = `You MUST write ALL responses in ${outputLanguage}.`;
+const userPrompt = `... Generate content in ${outputLanguage}:`;
+```
+
+### #33: GROQ_API_KEY Obrigatoria
+Apps que usam IA DEVEM ter GROQ_API_KEY configurada no Railway:
+```bash
+# Chave armazenada em ~/clawd/.env (NAO commitar!)
+railway variables set GROQ_API_KEY="$GROQ_API_KEY"
+```
+
+### #34: Aviso de IA Gratuita
+Apps com IA DEVEM exibir banner informando que e IA basica para testes:
+```tsx
+<div className="bg-amber-50 border-b border-amber-200 py-2 text-center">
+  <p className="text-amber-800 text-sm">
+    IA basica para fins de teste. Resultados podem variar.
+  </p>
+</div>
+```
+
+### #35: QA de Apps com IA (Adicionar ao Gate de QA)
+Antes de liberar para producao, verificar:
+- [ ] Saida respeita idioma selecionado (testar pt-BR, en-US, es)
+- [ ] GROQ_API_KEY configurada no Railway
+- [ ] Banner de aviso de IA visivel
+- [ ] Transcrição de YouTube funciona (se aplicavel)
+- [ ] Prompts geram conteudo relevante (nao alucinacoes)
+
+**Modelo Groq atual:** `llama-3.3-70b-versatile` (3.1 foi descontinuado)
+
 ## Lembretes Criticos
-1. Jobs rodam **Seg-Sex** apenas
+1. Jobs rodam **Seg-Sab** (atualizado)
 2. **ClawdBot** e o sistema de automacao (NAO crontab)
 3. Templates ficam em **~/clawd/** (NAO .claude/)
 4. Gates bloqueiam proxima fase se passed=false
 5. **Neon** para feedback, NAO Supabase
 6. Qualidade > Velocidade
+7. **Apos deploy bem-sucedido, adicionar app ao Portfolio automaticamente**
+8. **Apps com IA: saida DEVE respeitar idioma selecionado**
+9. **GROQ_API_KEY deve ser configurada para apps com IA**
 
 ---
-Ultima atualizacao: 2026-01-31 10:45
+Ultima atualizacao: 2026-01-31 16:30
