@@ -58,15 +58,64 @@ Voce e o maestro que orquestra todo o fluxo de deploy de apps. Sua responsabilid
 [ ] Reportar ao usuario: "Deploy concluido: [URL]"
 ```
 
-### FASE 4: Teste de Producao (5 min)
+### FASE 4: Teste de Producao via Playwright (10 min) - OBRIGATORIO
+
+**BLOQUEANTE**: Esta fase DEVE passar antes de prosseguir para GSC ou Posts no X.
+
 ```
-[ ] Acessar URL via browser (playwright)
-[ ] Verificar se pagina carrega sem erros
-[ ] Verificar se meta tags estao corretas
-[ ] Testar funcionalidade principal do app
-[ ] Capturar screenshot da pagina
-[ ] Reportar ao usuario: "Teste de producao OK"
+[ ] 4.1 NAVEGACAO
+    - Abrir URL de producao via browser_navigate
+    - Verificar se pagina carrega (sem 404/500)
+    - Capturar screenshot da homepage
+    - Verificar titulo da pagina (meta title)
+
+[ ] 4.2 FUNCIONALIDADE PRINCIPAL
+    - Identificar CTA principal na pagina
+    - Clicar no CTA via browser_click
+    - Verificar se acao funciona
+    - Capturar screenshot do resultado
+
+[ ] 4.3 RESPONSIVIDADE
+    - Redimensionar para mobile (375x667) via browser_resize
+    - Verificar se layout adapta
+    - Capturar screenshot mobile
+    - Voltar para desktop (1280x720)
+
+[ ] 4.4 API STATS
+    - Testar /api/stats?secret=garimdreaming-stats-2026&format=json
+    - Verificar se retorna JSON valido (nao HTML 404)
+    - Confirmar campos: totalViews, uniqueVisitors, todayViews
+
+[ ] 4.5 SEO
+    - Verificar /sitemap.xml existe (curl)
+    - Verificar /robots.txt existe (curl)
+    - Verificar meta tags no snapshot
 ```
+
+**Resultado Esperado:**
+```
+[FASE 4/7] TESTE PRODUCAO - [APROVADO/REPROVADO]
+
+Navegacao: OK/FALHOU
+Funcionalidade: OK/FALHOU
+Responsividade: OK/FALHOU
+API Stats: OK/FALHOU
+SEO: OK/FALHOU
+
+Screenshots capturados:
+- [app]-homepage.png
+- [app]-cta.png
+- [app]-mobile.png
+```
+
+**SE ALGUM TESTE FALHAR:**
+1. PARE imediatamente
+2. Documente o erro
+3. Corrija o problema
+4. Re-execute os testes
+5. So prossiga quando TODOS passarem
+
+**NAO PULE PARA FASE 5 OU 6 SEM APROVACAO!**
 
 ### FASE 5: Google Search Console (5 min)
 ```
@@ -101,14 +150,41 @@ Passos detalhados para verificacao via Playwright:
 
 ### FASE 7: Finalizacao (2 min)
 ```
+[ ] Adicionar/atualizar app no Dashboard GarimDreaming:
+    curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps \
+      -H "Content-Type: application/json" \
+      -d '{"name":"[APP]","slug":"[slug]","url":"[URL]","description":"[DESC]","score":85}'
+
+[ ] SYNC OBRIGATORIO - Sincronizar dashboard com stats de todos os apps:
+    curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+
+[ ] Verificar resultado do sync - TODOS 6 apps devem mostrar "success":
+    - clipgenius: ✅
+    - brandpulse-ai: ✅
+    - contentatomizer: ✅
+    - focusflow: ✅
+    - propostaai: ✅
+    - cliptoall: ✅
+
+[ ] Atualizar CLAUDE.md com:
+    - Resumo das ações no Historico de Ações
+    - URLs atualizadas (se houver mudança)
+    - Data de última atualização
+
 [ ] Atualizar arquivo de status para 100%
+
 [ ] Gerar resumo final com:
     - URL de producao
     - Status do GSC (verificado via Playwright com screenshot)
     - Links dos posts no X
     - Screenshots capturados (producao + GSC)
+    - Confirmacao de adicao ao Dashboard
+    - Resultado do sync (6/6 apps)
+
 [ ] Reportar ao usuario: "Deploy completo!"
 ```
+
+**IMPORTANTE**: NUNCA esquecer de adicionar o app ao Dashboard!
 
 **Resumo Final Deve Incluir**:
 ```

@@ -355,14 +355,14 @@ NAO paralelizar quando ha dependencias (ex: build antes de deploy).
 
 ## URLs de Producao Ativas
 
-| App | URL |
-|-----|-----|
-| PropostaAI | https://propostaai-production.up.railway.app |
-| ClipToAll | https://cliptoall-production.up.railway.app |
-| ClipGenius | https://clipgenius-production.up.railway.app |
-| BrandPulse AI | https://brandpulse-ai-production-2b82.up.railway.app |
-| ContentAtomizer | https://contentatomizer-production.up.railway.app |
-| FocusFlow | https://focusflow-production-2e04.up.railway.app |
+| App | URL | API Stats |
+|-----|-----|-----------|
+| ClipGenius | https://clipgenius-production.up.railway.app | ✅ |
+| BrandPulse AI | https://brandpulse-ai-production-2b82.up.railway.app | ✅ |
+| ContentAtomizer | https://contentatomizer-production.up.railway.app | ✅ |
+| FocusFlow | https://focusflow-production-2e04.up.railway.app | ✅ |
+| PropostaAI | https://proposta-ai-production.up.railway.app | ✅ |
+| ClipToAll | https://cliptoall-v2-production.up.railway.app | ✅ |
 
 ---
 
@@ -384,4 +384,248 @@ NAO paralelizar quando ha dependencias (ex: build antes de deploy).
 Este arquivo contem TUDO. Siga-o a risca. Sem desculpas.
 
 ---
-Ultima atualizacao: 2026-01-30
+
+## REGRA #16: Atualizar Dashboard Após Deploy
+
+Após QUALQUER deploy, SEMPRE adicionar/atualizar o app no dashboard:
+
+```bash
+# Adicionar novo app
+curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "[APP_NAME]",
+    "slug": "[app-slug]",
+    "url": "[URL_PRODUCAO]",
+    "description": "[DESCRICAO]",
+    "score": [0-100]
+  }'
+
+# Atualizar métricas
+curl -X PATCH https://garimdreaming-dashboard-production.up.railway.app/api/apps \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slug": "[app-slug]",
+    "total_views": [X],
+    "week_views": [X],
+    "today_views": [X]
+  }'
+```
+
+**NUNCA esquecer de atualizar o dashboard!**
+
+---
+
+## REGRA #17: Dashboard GarimDreaming
+
+URL: https://garimdreaming-dashboard-production.up.railway.app
+
+Apps registrados:
+| App | Slug | URL |
+|-----|------|-----|
+| ClipGenius | clipgenius | https://clipgenius-production.up.railway.app |
+| BrandPulse AI | brandpulse-ai | https://brandpulse-ai-production-2b82.up.railway.app |
+| ContentAtomizer | contentatomizer | https://contentatomizer-production.up.railway.app |
+| FocusFlow | focusflow | https://focusflow-production-2e04.up.railway.app |
+| PropostaAI | propostaai | https://proposta-ai-production.up.railway.app |
+| ClipToAll | cliptoall | https://cliptoall-v2-production.up.railway.app |
+
+---
+
+## REGRA #18: Todos Apps DEVEM ter API de Tracking
+
+Ao criar/deployar qualquer app, SEMPRE incluir:
+
+### 1. `/app/api/track/route.ts` - Recebe page views
+```typescript
+// POST: recebe { page, referrer, sessionId }
+// Armazena em global.__pageViews
+```
+
+### 2. `/app/api/stats/route.ts` - Retorna estatísticas
+```typescript
+// GET: ?secret=garimdreaming-stats-2026&format=json
+// Retorna { totalViews, weekViews, todayViews, uniqueVisitors }
+```
+
+### 3. Tracking no layout.tsx
+```typescript
+// Chama /api/track no client com sessionId
+```
+
+**Copiar de**: `~/agent-projects/builds/2026-01-29-clipgenius/src/app/api/`
+
+### Apps COM API de Tracking:
+- ClipGenius ✓
+- ContentAtomizer ✓
+- BrandPulse AI ✓ (adicionado 2026-01-30)
+- FocusFlow ✓ (adicionado 2026-01-30)
+- PropostaAI ✓ (adicionado 2026-01-30)
+- ClipToAll ✓ (adicionado 2026-01-30)
+
+---
+
+## REGRA #19: Sincronizar Dashboard Após Deploy
+
+Após QUALQUER deploy, rodar o sync do dashboard:
+
+```bash
+curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+```
+
+Isso puxa os dados reais de cada app e atualiza o dashboard automaticamente.
+
+---
+
+## REGRA #20: Teste Obrigatorio via Playwright ANTES de Postar no X
+
+**NUNCA** postar no X/Twitter ou declarar "deploy completo" sem testar via Playwright.
+
+### Plano de Teste Obrigatorio (para CADA app):
+
+```
+1. NAVEGACAO
+   - [ ] Abrir URL de producao
+   - [ ] Verificar se pagina carrega (sem 404/500)
+   - [ ] Capturar screenshot da homepage
+   - [ ] Verificar titulo da pagina (meta title)
+
+2. FUNCIONALIDADE PRINCIPAL
+   - [ ] Identificar CTA principal
+   - [ ] Clicar no CTA
+   - [ ] Verificar se acao funciona
+   - [ ] Capturar screenshot do resultado
+
+3. RESPONSIVIDADE
+   - [ ] Testar em viewport mobile (375x667)
+   - [ ] Verificar se layout adapta
+   - [ ] Capturar screenshot mobile
+
+4. API STATS
+   - [ ] Testar /api/stats?secret=garimdreaming-stats-2026&format=json
+   - [ ] Verificar se retorna JSON valido
+   - [ ] Confirmar campos: totalViews, uniqueVisitors, todayViews
+
+5. SEO
+   - [ ] Verificar sitemap.xml existe
+   - [ ] Verificar robots.txt existe
+   - [ ] Verificar meta tags no HTML
+```
+
+### Resultado Esperado:
+```
+[TESTE] [APP_NAME] - APROVADO/REPROVADO
+
+Navegacao: OK/FALHOU
+Funcionalidade: OK/FALHOU
+Responsividade: OK/FALHOU
+API Stats: OK/FALHOU
+SEO: OK/FALHOU
+
+Screenshots:
+- homepage: [app]-homepage.png
+- cta: [app]-cta.png
+- mobile: [app]-mobile.png
+```
+
+### Fluxo:
+1. Deploy finaliza
+2. **OBRIGATORIO**: Rodar suite de testes Playwright
+3. Se TODOS passarem -> Pode postar no X
+4. Se ALGUM falhar -> Corrigir ANTES de postar
+
+**NAO PULE ESTA ETAPA!**
+
+---
+
+## REGRA #21: Fluxo Completo de Deploy (Maestro)
+
+O fluxo de deploy DEVE seguir EXATAMENTE esta ordem:
+
+```
+1. BUILD → 2. DEPLOY → 3. TESTE → 4. SYNC → 5. POST
+```
+
+### Detalhamento:
+
+**1. BUILD**
+- `npm run build` ou `bun run build`
+- Se falhar, PARE e corrija
+
+**2. DEPLOY**
+- `railway up`
+- Aguardar URL de producao
+- Testar se responde (curl)
+
+**3. TESTE (BLOQUEANTE)**
+- Rodar suite de testes via Playwright
+- Testar API stats: `/api/stats?secret=garimdreaming-stats-2026&format=json`
+- Capturar screenshots
+- **SE FALHAR: Corrigir e re-testar. NAO prosseguir.**
+
+**4. SYNC**
+- Atualizar dashboard: `curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"`
+- Verificar se app aparece no dashboard
+
+**5. POST (SOMENTE APOS TESTES OK)**
+- Postar em 3 idiomas (pt-BR, en-US, es)
+- Capturar IDs dos posts
+
+### Comando de Sync:
+```bash
+curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+```
+
+---
+
+## REGRA #22: Documentar Ações ao Commitar
+
+**OBRIGATORIO**: Ao fazer QUALQUER commit, adicionar entrada no Historico de Ações abaixo.
+
+Formato:
+```
+### [DATA] - [RESUMO]
+- Ação 1
+- Ação 2
+- Resultado
+```
+
+**Isso garante que nunca esquecemos o que foi feito e serve como guia para próximas sessões.**
+
+---
+
+## Historico de Ações
+
+### 2026-01-31 - Correção ClipToAll e Sync Completo
+
+**Problema**: ClipToAll API retornava 404 no Railway (cache corrompido)
+
+**Solução**:
+1. Deletado projeto `clip-to-all` no Railway
+2. Criado novo projeto `cliptoall-v2`
+3. Deploy bem-sucedido em https://cliptoall-v2-production.up.railway.app
+4. API stats funcionando: `/api/stats?secret=garimdreaming-stats-2026&format=json`
+
+**Atualizado**:
+- Dashboard sync route com nova URL
+- CLAUDE.md com URLs corretas de todos os 6 apps
+- Banco de dados Neon com nova URL do ClipToAll
+
+**Resultado**: 6/6 apps com API stats funcionando e sincronizados no dashboard
+
+---
+
+### 2026-01-30 - Adição de Tracking API em todos os Apps
+
+**Ações**:
+1. Adicionado `/api/track/route.ts` em: BrandPulse AI, FocusFlow, PropostaAI, ClipToAll
+2. Adicionado `/api/stats/route.ts` em: BrandPulse AI, FocusFlow, PropostaAI, ClipToAll
+3. Deploy de todos os apps no Railway
+4. Criado Dashboard GarimDreaming com sync automático
+5. Implementado persistência com Neon PostgreSQL
+
+**Resultado**: Sistema de tracking e dashboard centralizados funcionando
+
+---
+
+Ultima atualizacao: 2026-01-31
