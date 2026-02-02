@@ -1,0 +1,23 @@
+{
+  "name": "bot-ultra-power",
+  "version": "1.0.0",
+  "description": "",
+  "main": "x-poster.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rvgarimrj/bot-ultra-power.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rvgarimrj/bot-ultra-power/issues"
+  },
+  "homepage": "https://github.com/rvgarimrj/bot-ultra-power#readme",
+  "dependencies": {
+    "playwright": "^1.58.0"
+  }
+}
