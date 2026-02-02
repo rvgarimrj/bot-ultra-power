@@ -311,6 +311,64 @@ cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json | jq '.blockers'
 
 ---
 
+## IDENTIDADE E BRANDING
+
+### Handle do X/Twitter
+**OBRIGATORIO:** Usar `@gabrielabiramia` em TODOS os lugares:
+- Twitter creator no metadata: `creator: "@gabrielabiramia"`
+- Links para X: `https://x.com/gabrielabiramia`
+- Footer dos apps: `@gabrielabiramia`
+- Posts no X
+
+### NAO MENCIONAR "Agente Autonomo"
+**PROIBIDO** usar termos como:
+- "agente autonomo"
+- "autonomous agent"
+- "AI agent"
+- "built by an agent"
+
+**USE** em vez disso:
+- "Built by @gabrielabiramia"
+- "Construido por @gabrielabiramia"
+
+### Template de Posts no X (apos deploy)
+Posts devem direcionar ao **PORTFOLIO**, nao ao app individual:
+
+```
+PT-BR:
+Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua opiniao...
+
+[Nome do App]
+
+https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+
+#BuildInPublic #IndieHacker #Portfolio
+```
+
+```
+EN-US:
+We just added another awesome App to our portfolio. Check it out and let me know what you think...
+
+[App Name]
+
+https://garimdreaming-portfolio-production.up.railway.app/en-US
+
+#BuildInPublic #IndieHacker #Portfolio
+```
+
+```
+ES:
+Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y dime que opinas...
+
+[Nombre del App]
+
+https://garimdreaming-portfolio-production.up.railway.app/es
+
+#BuildInPublic #IndieHacker #Portfolio
+```
+
+---
+
 ## LEMBRETES CRITICOS
 
 1. Jobs rodam **Seg-Sab** (domingo so tem Weekly Report)
@@ -321,7 +379,9 @@ cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json | jq '.blockers'
 6. Apos deploy, adicionar ao Portfolio automaticamente
 7. **TODOS** os apps devem ter DonationWidget + FeedbackWidget
 8. Apps com IA: GROQ_API_KEY + respeitar idioma + banner
+9. **Handle X:** @gabrielabiramia (NAO @garimdreaming)
+10. **NAO** mencionar "agente autonomo" nos apps
 
 ---
 
-Ultima atualizacao: 2026-01-31 22:50
+Ultima atualizacao: 2026-02-02 08:50
