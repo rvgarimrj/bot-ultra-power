@@ -120,6 +120,7 @@ Bitcoin SegWit: bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav
 | FocusFlow | https://focusflow-production-2e04.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | PropostaAI | https://proposta-ai-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | ClipToAll | https://cliptoall-v2-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| GestaoMEI | https://gestaomei-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | **Portfolio** | https://garimdreaming-portfolio-production.up.railway.app | - |
 | **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app | - |
 
@@ -238,7 +239,7 @@ railway variables set GROQ_API_KEY="$GROQ_API_KEY"
 
 ### Deploy
 - [ ] npm run build sem erros
-- [ ] railway up --detach
+- [ ] railway up --service [slug]-production --detach (IMPORTANTE: usar --service para URL correta!)
 - [ ] curl retorna 200
 - [ ] Sitemap acessivel (/sitemap.xml)
 
@@ -384,4 +385,4 @@ https://garimdreaming-portfolio-production.up.railway.app/es
 
 ---
 
-Ultima atualizacao: 2026-02-02 08:50
+Ultima atualizacao: 2026-02-02 19:05
