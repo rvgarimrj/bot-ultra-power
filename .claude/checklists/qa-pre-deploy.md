@@ -168,15 +168,60 @@ curl -I [URL]/robots.txt   # Deve retornar 200
 
 ---
 
-## 7. Acessibilidade
+## 7. Acessibilidade & Contraste Visual
 
+### 7.1 Contraste de Texto (CRITICO)
+| Check | Status | Como Testar |
+|-------|--------|-------------|
+| [ ] **Headings visiveis** (h1-h6 usam text-slate-900/dark:text-slate-50) | ⬜ | Inspecionar elementos |
+| [ ] **Paragrafos legiveis** (text-slate-700/dark:text-slate-300 minimo) | ⬜ | Visual + DevTools |
+| [ ] **Nenhum texto usa text-*-300 ou text-*-400 em fundo claro** | ⬜ | Grep no codigo |
+| [ ] **Placeholders visiveis** (text-slate-400 minimo) | ⬜ | Visual em inputs |
+| [ ] **Links destacados** (text-blue-600/dark:text-blue-400) | ⬜ | Visual |
+| [ ] **Ratio >= 4.5:1** para todo texto normal | ⬜ | Chrome DevTools color picker |
+
+### 7.2 Componentes Obrigatorios (CRITICO)
+| Check | Status | Localizacao |
+|-------|--------|-------------|
+| [ ] **DonationWidget presente** | ⬜ | Hero ou area visivel da pagina |
+| [ ] **DonationWidget visivel** (cores contrastantes) | ⬜ | Screenshot |
+| [ ] **FeedbackWidget presente** | ⬜ | Footer da pagina |
+| [ ] **FeedbackWidget funcional** | ⬜ | Testar envio |
+| [ ] **Wallets corretas no DonationWidget** | ⬜ | Verificar enderecos |
+
+### 7.3 Acessibilidade Geral
 | Check | Status |
 |-------|--------|
 | [ ] Alt text em todas imagens | ⬜ |
 | [ ] Labels em todos inputs | ⬜ |
-| [ ] Contraste adequado (4.5:1) | ⬜ |
-| [ ] Navegação por teclado funciona | ⬜ |
-| [ ] Focus states visíveis | ⬜ |
+| [ ] Navegacao por teclado funciona | ⬜ |
+| [ ] Focus states visiveis (outline ou ring) | ⬜ |
+| [ ] prefers-reduced-motion respeitado | ⬜ |
+
+### 7.4 Teste Automatizado de Contraste (Playwright)
+```bash
+# Rodar apos navegacao para URL
+# 1. Capturar snapshot
+mcp__playwright__browser_snapshot
+
+# 2. Verificar se DonationWidget e FeedbackWidget aparecem no snapshot
+# 3. Screenshot para validacao visual
+mcp__playwright__browser_take_screenshot filename=[app]-contrast-check.png
+
+# 4. Testar mobile
+mcp__playwright__browser_resize width=375 height=667
+mcp__playwright__browser_take_screenshot filename=[app]-mobile-check.png
+```
+
+### 7.5 Codigo Proibido (Grep Check)
+```bash
+# Executar no diretorio do app ANTES do build
+grep -rn "text-slate-300\|text-gray-300\|text-zinc-300" --include="*.tsx" .
+grep -rn "text-slate-400\s" --include="*.tsx" . | grep -v placeholder
+
+# Se encontrar resultados = FALHA
+# Acao: Substituir por text-slate-600 ou mais escuro
+```
 
 ---
 

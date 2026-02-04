@@ -41,9 +41,16 @@ GarimDreaming e um agente autonomo que pesquisa tendencias, define produtos, bui
       │             │ -> Verifica build-gate primeiro
       │             │ -> Se falhar: passed=false, bloqueia posts
       │
+19:30 │ MAESTRO     │ Orquestrador de qualidade (AUTO-FIX)
+      │             │ -> Verifica qa-gate
+      │             │ -> Se falhou: corrige erros automaticamente
+      │             │ -> Loop: fix -> build -> deploy -> test
+      │             │ -> Max 3 tentativas
+      │             │ -> Atualiza qa-gate quando passa
+      │
 21:00 │ NOTIFY      │ Posts no X (3 idiomas) + Sync Dashboard
       │             │ -> Verifica qa-gate primeiro
-      │             │ -> Se QA falhou: NAO posta
+      │             │ -> Se QA falhou E Maestro nao corrigiu: NAO posta
       │
 22:00 │ SYNC        │ Sincroniza knowledge base com Supermemory
 ```
@@ -84,17 +91,42 @@ i18n/
 
 ---
 
-## TEMPLATES OBRIGATORIOS
+## DOCUMENTOS OBRIGATORIOS
 
-Antes de buildar, SEMPRE ler:
+### LEITURA OBRIGATORIA ANTES DE BUILDAR
 
-| Template | Caminho | Conteudo |
-|----------|---------|----------|
+| Documento | Caminho | Conteudo |
+|-----------|---------|----------|
+| **GUIA DE DEV** | `.claude/guides/DEVELOPMENT-GUIDE.md` | **LER PRIMEIRO!** Instrucoes completas |
+| **DESIGN SYSTEM** | `.claude/standards/design-system.md` | Padroes visuais + contraste |
+| **WIDGETS** | `.claude/standards/widgets-design.md` | DonationWidget + FeedbackWidget (design exato) |
+| **POS-DEPLOY** | `.claude/guides/POST-DEPLOY-CHECKLIST.md` | Checklist APOS cada deploy |
+| QA Checklist | `.claude/checklists/qa-pre-deploy.md` | Testes obrigatorios |
 | SEO + i18n | `~/clawd/templates/seo-i18n-template.md` | Metadata, alternates, hreflang |
-| Feedback | `~/clawd/templates/feedback-widget-template.md` | Componente + API Neon |
-| Doacao | `~/clawd/templates/donation-widget-template.md` | Crypto wallets + UI |
-| QA | `~/clawd/templates/qa-checklist-template.md` | Checklist completo |
 | IA | `~/clawd/templates/ai-app-template.md` | Apps com Groq/IA |
+
+### REGRAS VISUAIS CRITICAS
+
+**PROBLEMA:** Textos escuros em fundos escuros = ilegivel
+
+**SOLUCAO:** Seguir Design System OBRIGATORIAMENTE
+
+```css
+/* TEXTO SEMPRE VISIVEL */
+body { @apply text-slate-900 dark:text-slate-50; }
+h1-h6 { @apply text-slate-900 dark:text-slate-50; }
+p { @apply text-slate-700 dark:text-slate-300; }
+
+/* PROIBIDO */
+text-slate-300, text-slate-400 em fundos claros
+text-gray-300, text-zinc-300 em qualquer lugar
+```
+
+**VERIFICACAO OBRIGATORIA:**
+```bash
+# ANTES do build - Se retornar algo = CORRIGIR
+grep -rn "text-slate-300\|text-gray-300" --include="*.tsx" .
+```
 
 ---
 
@@ -121,8 +153,8 @@ Bitcoin SegWit: bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav
 | PropostaAI | https://proposta-ai-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | ClipToAll | https://cliptoall-v2-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | GestaoMEI | https://gestaomei-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
-| **Portfolio** | https://garimdreaming-portfolio-production.up.railway.app | - |
-| **Dashboard** | https://garimdreaming-dashboard-production.up.railway.app | - |
+| **Portfolio** | https://gabrielabiramia-portfolio-production.up.railway.app | - |
+| **Dashboard** | https://gabrielabiramia-dashboard-production.up.railway.app | - |
 
 ---
 
@@ -162,13 +194,13 @@ cat ~/.clawdbot/cron/jobs.json | jq '.jobs[] | select(.enabled==true) | .name'
 cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json
 
 # Sync dashboard manualmente
-curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 
 # Verificar se ClawdBot esta rodando
 ps aux | grep clawdbot
 
 # Adicionar app ao portfolio
-curl -X POST https://garimdreaming-portfolio-production.up.railway.app/api/add-app \
+curl -X POST https://gabrielabiramia-portfolio-production.up.railway.app/api/add-app \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer garimdreaming-portfolio-2026" \
   -d '{"key":"slug","icon":"Rocket","color":"from-indigo-500 to-blue-600",...}'
@@ -243,10 +275,16 @@ railway variables set GROQ_API_KEY="$GROQ_API_KEY"
 - [ ] curl retorna 200
 - [ ] Sitemap acessivel (/sitemap.xml)
 
-### Pos-Deploy
+### Pos-Deploy (SEGUIR `.claude/guides/POST-DEPLOY-CHECKLIST.md`)
+- [ ] Verificar app online (curl retorna 200)
+- [ ] **ADICIONAR AO DASHBOARD** (POST /api/apps) <- CRITICO!
+- [ ] Sync Dashboard (GET /api/sync)
+- [ ] **ALIMENTAR API TARGETING** (POST /api/targeting) <- Keywords + Contas X!
 - [ ] Adicionar ao Portfolio (via API)
-- [ ] Sync Dashboard
+- [ ] Verificar DonationWidget visivel (nao colapsado)
+- [ ] Verificar FeedbackWidget no footer
 - [ ] Submeter sitemap no GSC
+- [ ] Criar gate de deploy
 
 ---
 
@@ -341,7 +379,7 @@ Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua
 
 [Nome do App]
 
-https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+https://gabrielabiramia-portfolio-production.up.railway.app/pt-BR
 
 #BuildInPublic #IndieHacker #Portfolio
 ```
@@ -352,7 +390,7 @@ We just added another awesome App to our portfolio. Check it out and let me know
 
 [App Name]
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US
 
 #BuildInPublic #IndieHacker #Portfolio
 ```
@@ -363,7 +401,7 @@ Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y
 
 [Nombre del App]
 
-https://garimdreaming-portfolio-production.up.railway.app/es
+https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 #BuildInPublic #IndieHacker #Portfolio
 ```
@@ -382,7 +420,12 @@ https://garimdreaming-portfolio-production.up.railway.app/es
 8. Apps com IA: GROQ_API_KEY + respeitar idioma + banner
 9. **Handle X:** @gabrielabiramia (NAO @garimdreaming)
 10. **NAO** mencionar "agente autonomo" nos apps
+11. **LER design-system.md ANTES de buildar** - evita textos invisiveis
+12. **TESTAR contraste em CADA deploy** - screenshot + verificacao visual
+13. **SE texto invisivel = BLOQUEIA deploy** ate corrigir
+14. **APOS deploy: ADICIONAR ao Dashboard** (POST /api/apps) <- nao esquecer!
+15. **Widgets DEVEM seguir design de widgets-design.md** exatamente
 
 ---
 
-Ultima atualizacao: 2026-02-02 19:05
+Ultima atualizacao: 2026-02-04
