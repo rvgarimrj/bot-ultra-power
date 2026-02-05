@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "description": "Indice dos apps ja buildados e deployados",
+  "lastUpdated": "2026-02-05",
+  "totalApps": 13,
+  "entries": [
+    {
+      "name": "WikiScroll",
+      "slug": "wikiscroll",
+      "url": "https://wikiscroll-production.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": 43,
+      "date": "2026-01-28",
+      "description": "Feed estilo TikTok com fatos aleatorios da Wikipedia em scroll infinito"
+    },
+    {
+      "name": "LocalPDF",
+      "slug": "localpdf",
+      "url": null,
+      "status": "spec-only",
+      "track": "global",
+      "score": 43,
+      "date": "2026-01-28",
+      "description": "Toolkit de PDF 100% client-side com privacidade total"
+    },
+    {
+      "name": "MorningPaper",
+      "slug": "morning-paper",
+      "url": null,
+      "status": "spec-only",
+      "track": "global",
+      "score": 40,
+      "date": "2026-01-28",
+      "description": "Transforma newsletters em formato de jornal classico e bonito"
+    },
+    {
+      "name": "BrandPulse AI",
+      "slug": "brandpulse-ai",
+      "url": "https://brandpulse-ai-production-2b82.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": null,
+      "date": "2026-01-29",
+      "description": "Verifica se sua marca e mencionada por LLMs com AI Visibility Score"
+    },
+    {
+      "name": "ClipGenius",
+      "slug": "clipgenius",
+      "url": "https://clipgenius-production.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": null,
+      "date": null,
+      "description": "App ativo em producao (spec nao disponivel)"
+    },
+    {
+      "name": "ContentAtomizer",
+      "slug": "contentatomizer",
+      "url": "https://contentatomizer-production.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": null,
+      "date": null,
+      "description": "App ativo em producao (spec nao disponivel)"
+    },
+    {
+      "name": "FocusFlow",
+      "slug": "focusflow",
+      "url": "https://focusflow-production-2e04.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": null,
+      "date": null,
+      "description": "App ativo em producao (spec nao disponivel)"
+    },
+    {
+      "name": "PropostaAI",
+      "slug": "proposta-ai",
+      "url": "https://proposta-ai-production.up.railway.app",
+      "status": "ativo",
+      "track": "brasil",
+      "score": 49,
+      "date": "2026-01-30",
+      "description": "Gerador de propostas comerciais com IA para freelancers brasileiros"
+    },
+    {
+      "name": "ClipToAll",
+      "slug": "cliptoall",
+      "url": "https://cliptoall-v2-production.up.railway.app",
+      "status": "ativo",
+      "track": "global",
+      "score": null,
+      "date": null,
+      "description": "App ativo em producao v2 (spec nao disponivel)"
+    },
+    {
+      "name": "GestaoMEI",
+      "slug": "gestao-mei",
+      "url": "https://gestaomei-production.up.railway.app",
+      "status": "ativo",
+      "track": "brasil",
+      "score": 50,
+      "date": "2026-02-02",
+      "description": "Portal simples para MEIs emitirem NF-e e controlarem receitas/despesas"
+    },
+    {
+      "name": "QuoteCraft",
+      "slug": "quotecraft",
+      "url": null,
+      "status": "spec-only",
+      "track": "brasil",
+      "score": 37,
+      "date": "2026-02-04",
+      "description": "Gerador de orcamentos visuais profissionais otimizado para WhatsApp"
+    },
+    {
+      "name": "ToolMatch AI",
+      "slug": "toolmatch-ai",
+      "url": null,
+      "status": "spec-only",
+      "track": "global",
+      "score": 43,
+      "date": "2026-02-04",
+      "description": "Quiz interativo que recomenda ferramentas de IA personalizadas"
+    },
+    {
+      "name": "FeedbackPin",
+      "slug": "feedbackpin",
+      "url": null,
+      "status": "spec-only",
+      "track": "brasil",
+      "score": 45,
+      "date": "2026-02-05",
+      "description": "Widget JS embedavel para feedback visual com anotacoes em sites"
+    }
+  ]
+}

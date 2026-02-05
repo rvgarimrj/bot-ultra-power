@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "track": "global",
+  "description": "Indice de pesquisas de dores universais - apps que funcionam em qualquer pais",
+  "lastUpdated": "2026-02-05",
+  "totalApps": 17,
+  "entries": [
+    {
+      "name": "Newsletter Digest",
+      "slug": "newsletter-digest",
+      "date": "27-01-2026",
+      "file": "pesquisas/globais/27-01-2026-GLOBAL.MD",
+      "score": 40,
+      "category": "produtividade",
+      "description": "Agrupa newsletters em formato legivel estilo morning paper",
+      "tam": "Bilhoes (email/newsletter market)",
+      "ranking": 1
+    },
+    {
+      "name": "GameCut",
+      "slug": "gamecut",
+      "date": "27-01-2026",
+      "file": "pesquisas/globais/27-01-2026-GLOBAL.MD",
+      "score": 38,
+      "category": "conteudo",
+      "description": "AI detecta highlights em gameplay e gera clips virais para TikTok",
+      "tam": "Bilhoes (gaming content market)",
+      "ranking": 2
+    },
+    {
+      "name": "MeetingAction",
+      "slug": "meetingaction",
+      "date": "27-01-2026",
+      "file": "pesquisas/globais/27-01-2026-GLOBAL.MD",
+      "score": 35,
+      "category": "produtividade",
+      "description": "Transcreve reunioes e extrai TODO items automaticamente",
+      "tam": "Bilhoes (meeting/productivity market)",
+      "ranking": 3
+    },
+    {
+      "name": "CapsLock Mute",
+      "slug": "capslock-mute",
+      "date": "27-01-2026",
+      "file": "pesquisas/globais/27-01-2026-GLOBAL.MD",
+      "score": 32,
+      "category": "utilidade",
+      "description": "Quick mute/unmute para video calls via shortcut global",
+      "tam": "Bilhoes (remote work tools)",
+      "ranking": 4
+    },
+    {
+      "name": "WikiScroll",
+      "slug": "wikiscroll",
+      "date": "28-01-2026",
+      "file": "pesquisas/globais/28-01-2026-GLOBAL.MD",
+      "score": 43,
+      "category": "educacao",
+      "description": "TikTok-style knowledge feed com fatos do Wikipedia",
+      "tam": "Bilhoes (edtech + social learning)",
+      "ranking": 1
+    },
+    {
+      "name": "LocalPDF",
+      "slug": "localpdf",
+      "date": "28-01-2026",
+      "file": "pesquisas/globais/28-01-2026-GLOBAL.MD",
+      "score": 43,
+      "category": "utilidade",
+      "description": "PDF toolkit privacy-first que roda 100% no browser",
+      "tam": "Bilhoes (document tools market)",
+      "ranking": 1
+    },
+    {
+      "name": "IdeaVault",
+      "slug": "ideavault",
+      "date": "28-01-2026",
+      "file": "pesquisas/globais/28-01-2026-GLOBAL.MD",
+      "score": 31,
+      "category": "comunidade",
+      "description": "Armazena e descobre ideias de startup com upvotes",
+      "tam": "Centenas de milhoes (indie hacker niche)",
+      "ranking": 3
+    },
+    {
+      "name": "FocusFlow",
+      "slug": "focusflow",
+      "date": "29-01-2026",
+      "file": "pesquisas/globais/29-01-2026-GLOBAL.MD",
+      "score": 46,
+      "category": "produtividade",
+      "description": "ADHD visual task timer com gamificacao e micro-tarefas",
+      "tam": "$2.78 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "TestPilot",
+      "slug": "testpilot",
+      "date": "29-01-2026",
+      "file": "pesquisas/globais/29-01-2026-GLOBAL.MD",
+      "score": 43,
+      "category": "devtools",
+      "description": "Visual QA recording tool com testes auto-corrigentes",
+      "tam": "$5.6 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "ClipGenius",
+      "slug": "clipgenius",
+      "date": "29-01-2026",
+      "file": "pesquisas/globais/29-01-2026-GLOBAL.MD",
+      "score": 40,
+      "category": "conteudo",
+      "description": "AI detecta momentos virais em videos longos e gera clips",
+      "tam": "$4.4 bilhoes",
+      "ranking": 3
+    },
+    {
+      "name": "ClipToAll",
+      "slug": "cliptoall",
+      "date": "30-01-2026",
+      "file": "pesquisas/globais/30-01-2026-GLOBAL.MD",
+      "score": 47,
+      "category": "conteudo",
+      "description": "Transforma 1 video/podcast em 20+ pecas de conteudo multi-plataforma",
+      "tam": "$8.2 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "DevLogr",
+      "slug": "devlogr",
+      "date": "03-02-2026",
+      "file": "pesquisas/globais/03-02-2026-GLOBAL.MD",
+      "score": 32,
+      "category": "devtools",
+      "description": "Diario de progresso para devs com geracao de changelogs e posts sociais",
+      "tam": "Centenas de milhoes (developer tools niche)",
+      "ranking": 1
+    },
+    {
+      "name": "QuoteBoard",
+      "slug": "quoteboard",
+      "date": "03-02-2026",
+      "file": "pesquisas/globais/03-02-2026-GLOBAL.MD",
+      "score": 28,
+      "category": "conteudo",
+      "description": "Agregador de citacoes formatadas automaticamente para redes sociais",
+      "tam": "Dezenas de milhoes (social media niche)",
+      "ranking": 2
+    },
+    {
+      "name": "LifeGrid",
+      "slug": "lifegrid",
+      "date": "03-02-2026",
+      "file": "pesquisas/globais/03-02-2026-GLOBAL.MD",
+      "score": 30,
+      "category": "wellness",
+      "description": "Visualizador de vida em grid de 1080 meses com eventos marcaveis",
+      "tam": "Dezenas de milhoes (wellness niche)",
+      "ranking": 3
+    },
+    {
+      "name": "ToolMatch AI",
+      "slug": "toolmatch-ai",
+      "date": "04-02-2026",
+      "file": "pesquisas/globais/04-02-2026-GLOBAL.MD",
+      "score": 43,
+      "category": "ia",
+      "description": "Quiz interativo que recomenda ferramentas de IA personalizadas para SMBs",
+      "tam": "$11.78 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "Vibe Prompt Hub",
+      "slug": "vibe-prompt-hub",
+      "date": "04-02-2026",
+      "file": "pesquisas/globais/04-02-2026-GLOBAL.MD",
+      "score": 38,
+      "category": "devtools",
+      "description": "Biblioteca curada de prompts para vibe coding com Cursor, Windsurf, Bolt",
+      "tam": "$15 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "SplitSimple",
+      "slug": "splitsimple",
+      "date": "05-02-2026",
+      "file": "pesquisas/globais/05-02-2026-GLOBAL.MD",
+      "score": 42,
+      "category": "marketing",
+      "description": "A/B testing ultra-simples para landing pages - so headlines e CTAs",
+      "tam": "$0.94 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "LaunchReady",
+      "slug": "launchready",
+      "date": "05-02-2026",
+      "file": "pesquisas/globais/05-02-2026-GLOBAL.MD",
+      "score": 40,
+      "category": "devtools",
+      "description": "Checklist automatizado de pre-lancamento para sites e MVPs",
+      "tam": "$1.2 bilhoes",
+      "ranking": 2
+    }
+  ]
+}

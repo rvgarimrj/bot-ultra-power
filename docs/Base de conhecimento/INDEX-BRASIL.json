@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "track": "brasil",
+  "description": "Indice de pesquisas de dores brasileiras - problemas que concorrentes internacionais nao resolvem",
+  "lastUpdated": "2026-02-05",
+  "totalApps": 7,
+  "entries": [
+    {
+      "name": "PropostaAI",
+      "slug": "proposta-ai",
+      "date": "30-01-2026",
+      "file": "pesquisas/brasil/30-01-2026-BRASIL.MD",
+      "score": 49,
+      "category": "freelancer",
+      "description": "Gerador de propostas comerciais com IA para freelancers brasileiros",
+      "tam": "$4.51 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "BoletaIA",
+      "slug": "boleta-ia",
+      "date": "30-01-2026",
+      "file": "pesquisas/brasil/30-01-2026-BRASIL.MD",
+      "score": 46,
+      "category": "financeiro",
+      "description": "Dashboard de faturas para freelancers com follow-up inteligente de cobrancas",
+      "tam": "$6.5 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "GestaoMEI",
+      "slug": "gestao-mei",
+      "date": "02-02-2026",
+      "file": "pesquisas/brasil/02-02-2026-BRASIL.MD",
+      "score": 50,
+      "category": "financeiro",
+      "description": "Portal de NF-e e gestao simplificada para MEIs brasileiros",
+      "tam": "R$ 1+ bilhao",
+      "ranking": 1
+    },
+    {
+      "name": "FreelanceHub",
+      "slug": "freelancehub",
+      "date": "02-02-2026",
+      "file": "pesquisas/brasil/02-02-2026-BRASIL.MD",
+      "score": 43,
+      "category": "freelancer",
+      "description": "Portal white-label para freelancers compartilharem propostas e faturas com clientes",
+      "tam": "$14.39 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "ProposalAI",
+      "slug": "proposal-ai",
+      "date": "02-02-2026",
+      "file": "pesquisas/brasil/02-02-2026-BRASIL.MD",
+      "score": 39,
+      "category": "freelancer",
+      "description": "IA que gera propostas comerciais completas a partir de briefing simples",
+      "tam": "$820 milhoes",
+      "ranking": 3
+    },
+    {
+      "name": "QuoteCraft",
+      "slug": "quotecraft",
+      "date": "04-02-2026",
+      "file": "pesquisas/brasil/04-02-2026-BRASIL.MD",
+      "score": 37,
+      "category": "freelancer",
+      "description": "Gerador de orcamentos visuais bonitos para freelancers brasileiros via WhatsApp",
+      "tam": "$15 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "FeedbackPin",
+      "slug": "feedbackpin",
+      "date": "05-02-2026",
+      "file": "pesquisas/brasil/05-02-2026-BRASIL.MD",
+      "score": 45,
+      "category": "devtools",
+      "description": "Widget de feedback visual para sites - clientes clicam e anotam direto na pagina",
+      "tam": "$2.1 bilhoes",
+      "ranking": 1
+    }
+  ]
+}

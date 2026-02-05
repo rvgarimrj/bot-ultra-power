@@ -4,129 +4,87 @@
 *No recent activity*
 </claude-mem-context>
 
-# GarimDreaming - Sistema Autonomo de Build de Apps
+# GarimDreaming - Sistema de Pesquisa Estrategica
 
 ## VISAO GERAL
 
-GarimDreaming e um agente autonomo que pesquisa tendencias, define produtos, builda apps e faz deploy automaticamente de Segunda a Sabado. O sistema roda via **ClawdBot** (NAO crontab).
+GarimDreaming e um sistema de pesquisa de mercado que roda automaticamente via **ClawdBot** (NAO crontab) de Segunda a Sabado. Pesquisa 6 oportunidades/dia em 2 tracks independentes.
 
-**Missao:** Buildar 1 app por dia que resolve uma dor real, com i18n, feedback e doacoes.
+**Missao:** Construir base de conhecimento estrategica para decisao futura de investimento.
 
----
-
-## FLUXO DIARIO AUTOMATIZADO (Seg-Sab)
-
-```
-06:00 │ RESEARCH    │ Pesquisa tendencias (Product Hunt, HN, Twitter)
-      │             │ -> Envia TOP 3 opcoes no Telegram
-      │             │ -> Usuario pode responder ate 07:00 para mudar
-      │
-07:00 │ DEFINE      │ Le resposta do usuario (override.txt)
-      │             │ -> Cria spec do produto escolhido
-      │             │ -> Confirma no Telegram
-      │
-08:00 │ BUILD       │ Cria projeto Next.js completo:
-      │             │ -> i18n (pt-BR, en-US, es)
-      │             │ -> FeedbackWidget no footer
-      │             │ -> DonationWidget no hero
-      │             │ -> Analytics (/api/track, /api/stats)
-      │             │ -> SEO (sitemap.ts, robots.ts, metadata)
-      │
-12:00 │ PROGRESS    │ Checkpoint - verifica se build esta OK
-      │
-18:00 │ FINAL       │ Deploy no Railway + GSC + Cria build-gate
-      │             │ -> Se falhar: passed=false, bloqueia QA
-      │
-19:00 │ QA          │ Testes Playwright (locales, mobile, API)
-      │             │ -> Verifica build-gate primeiro
-      │             │ -> Se falhar: passed=false, bloqueia posts
-      │
-19:30 │ MAESTRO     │ Orquestrador de qualidade (AUTO-FIX)
-      │             │ -> Verifica qa-gate
-      │             │ -> Se falhou: corrige erros automaticamente
-      │             │ -> Loop: fix -> build -> deploy -> test
-      │             │ -> Max 3 tentativas
-      │             │ -> Atualiza qa-gate quando passa
-      │
-21:00 │ NOTIFY      │ Posts no X (3 idiomas) + Sync Dashboard
-      │             │ -> Verifica qa-gate primeiro
-      │             │ -> Se QA falhou E Maestro nao corrigiu: NAO posta
-      │
-22:00 │ SYNC        │ Sincroniza knowledge base com Supermemory
-```
-
-**Domingo 18:00:** Weekly Report (analise de performance semanal)
+**Contexto:** Railway estourou quotas. Pivot de "build 1 app/dia" para "pesquisa-only" com 2 tracks.
 
 ---
 
-## ESTRUTURA OBRIGATORIA DE CADA APP
-
-Todo app buildado DEVE ter:
+## FLUXO DIARIO (Seg-Sab)
 
 ```
-app/
-├── [locale]/
-│   ├── layout.tsx          # generateMetadata com i18n
-│   └── page.tsx            # DonationWidget no hero + FeedbackWidget no footer
-├── api/
-│   ├── track/route.ts      # Analytics de views
-│   ├── stats/route.ts      # Endpoint de estatisticas
-│   └── feedback/route.ts   # Salva feedback no Neon
-├── sitemap.ts              # URLs por locale
-└── robots.ts               # Permite indexacao
-
-components/
-├── DonationWidget.tsx      # Crypto donations (Solana, ETH, BTC)
-└── FeedbackWidget.tsx      # Rating + sugestao
-
-messages/
-├── pt-BR.json
-├── en-US.json
-└── es.json
-
-i18n/
-├── routing.ts
-└── request.ts
+06:00 │ PESQUISA GLOBAL  │ 3 dores universais (multi-regiao)
+      │                   │ -> Salva em docs/Base de conhecimento/pesquisas/globais/
+      │                   │ -> Atualiza INDEX-GLOBAL.json
+      │                   │ -> Envia resumo no Telegram
+      │
+06:30 │ PESQUISA BRASIL   │ 3 dores brasileiras especificas
+      │                   │ -> Salva em docs/Base de conhecimento/pesquisas/brasil/
+      │                   │ -> Atualiza INDEX-BRASIL.json
+      │                   │ -> Envia resumo no Telegram
+      │
+cada  │ DASHBOARD SYNC    │ Sync stats dos apps existentes
+6h    │                   │ -> Silencioso se OK
 ```
+
+**Domingo 18:00:** Weekly Report (top 5 Global + Brasil, tendencias, recomendacao)
+
+**Jobs DESATIVADOS:** Define, Build, Progress, Final/Deploy, QA, Notify/X, Sync Knowledge
 
 ---
 
-## DOCUMENTOS OBRIGATORIOS
+## BASE DE CONHECIMENTO
 
-### LEITURA OBRIGATORIA ANTES DE BUILDAR
-
-| Documento | Caminho | Conteudo |
-|-----------|---------|----------|
-| **GUIA DE DEV** | `.claude/guides/DEVELOPMENT-GUIDE.md` | **LER PRIMEIRO!** Instrucoes completas |
-| **DESIGN SYSTEM** | `.claude/standards/design-system.md` | Padroes visuais + contraste |
-| **WIDGETS** | `.claude/standards/widgets-design.md` | DonationWidget + FeedbackWidget (design exato) |
-| **POS-DEPLOY** | `.claude/guides/POST-DEPLOY-CHECKLIST.md` | Checklist APOS cada deploy |
-| QA Checklist | `.claude/checklists/qa-pre-deploy.md` | Testes obrigatorios |
-| SEO + i18n | `~/clawd/templates/seo-i18n-template.md` | Metadata, alternates, hreflang |
-| IA | `~/clawd/templates/ai-app-template.md` | Apps com Groq/IA |
-
-### REGRAS VISUAIS CRITICAS
-
-**PROBLEMA:** Textos escuros em fundos escuros = ilegivel
-
-**SOLUCAO:** Seguir Design System OBRIGATORIAMENTE
-
-```css
-/* TEXTO SEMPRE VISIVEL */
-body { @apply text-slate-900 dark:text-slate-50; }
-h1-h6 { @apply text-slate-900 dark:text-slate-50; }
-p { @apply text-slate-700 dark:text-slate-300; }
-
-/* PROIBIDO */
-text-slate-300, text-slate-400 em fundos claros
-text-gray-300, text-zinc-300 em qualquer lugar
+```
+docs/Base de conhecimento/
+  INDEX-GLOBAL.json          # Indice pesquisas globais (busca via jq)
+  INDEX-BRASIL.json          # Indice pesquisas Brasil (busca via jq)
+  INDEX-APPS-BUILDADOS.json  # Indice apps ja deployados
+  pesquisas/
+    globais/                 # DD-MM-AAAA-GLOBAL.MD
+    brasil/                  # DD-MM-AAAA-BRASIL.MD
+  apps-buildados/            # [slug].md
+  comparacoes/               # Weekly reports
 ```
 
-**VERIFICACAO OBRIGATORIA:**
+### Consultas Rapidas
 ```bash
-# ANTES do build - Se retornar algo = CORRIGIR
-grep -rn "text-slate-300\|text-gray-300" --include="*.tsx" .
+# Top 5 Global por score
+cat "docs/Base de conhecimento/INDEX-GLOBAL.json" | jq '[.entries[] | {name, score}] | sort_by(-.score) | .[0:5]'
+
+# Top 5 Brasil por score
+cat "docs/Base de conhecimento/INDEX-BRASIL.json" | jq '[.entries[] | {name, score}] | sort_by(-.score) | .[0:5]'
+
+# Total pesquisados
+cat "docs/Base de conhecimento/INDEX-GLOBAL.json" | jq '.totalApps'
+cat "docs/Base de conhecimento/INDEX-BRASIL.json" | jq '.totalApps'
+
+# Buscar por categoria
+cat "docs/Base de conhecimento/INDEX-GLOBAL.json" | jq '.entries[] | select(.category == "produtividade")'
 ```
+
+---
+
+## METODOLOGIA DE PESQUISA
+
+Ver detalhes completos em: `~/clawd/RESEARCH.md`
+
+### Track Global - Dores Universais
+- **Objetivo:** Apps que funcionam igual em qualquer pais
+- **Inspiracao:** Todoist, Photopea, Formula Bot, Tally, Bannerbear
+- **Fontes:** OECD, Gartner, McKinsey, Product Hunt, HN, Reddit, Indie Hackers
+- **Score max:** 65 pontos (base 50 + bonus universalidade/escalabilidade/moat)
+
+### Track Brasil - Dores Brasileiras
+- **Objetivo:** Problemas que gringos nao resolvem (burocracia, Pix, regulacao)
+- **Fontes:** SEBRAE, IBGE, BACEN, TabNews, Reddit BR, Reclame Aqui
+- **Score max:** 65 pontos (base 50 + bonus exclusividade/conhecimento local/integracao)
 
 ---
 
@@ -158,40 +116,11 @@ Bitcoin SegWit: bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav
 
 ---
 
-## SISTEMA DE GATES
-
-Gates sao arquivos JSON que bloqueiam a proxima fase se a anterior falhou.
-
-```bash
-# Localizacao
-~/agent-projects/gates/YYYY-MM-DD-build.json
-~/agent-projects/gates/YYYY-MM-DD-qa.json
-
-# Estrutura
-{
-  "date": "2026-01-31",
-  "phase": "build",
-  "passed": true,
-  "timestamp": "2026-01-31T18:30:00-03:00",
-  "apps": [{"name": "AppName", "status": "PASS", "url": "..."}],
-  "blockers": []
-}
-```
-
-**Regras:**
-- `build-gate.passed = false` -> QA bloqueado
-- `qa-gate.passed = false` -> Posts no X bloqueados
-
----
-
 ## COMANDOS UTEIS
 
 ```bash
 # Ver jobs ativos do ClawdBot
 cat ~/.clawdbot/cron/jobs.json | jq '.jobs[] | select(.enabled==true) | .name'
-
-# Ver gates de hoje
-cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json
 
 # Sync dashboard manualmente
 curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
@@ -199,92 +128,33 @@ curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/sync?secre
 # Verificar se ClawdBot esta rodando
 ps aux | grep clawdbot
 
-# Adicionar app ao portfolio
-curl -X POST https://gabrielabiramia-portfolio-production.up.railway.app/api/add-app \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer garimdreaming-portfolio-2026" \
-  -d '{"key":"slug","icon":"Rocket","color":"from-indigo-500 to-blue-600",...}'
-
 # Stats de um app
 curl "https://[app]-production.up.railway.app/api/stats?secret=garimdreaming-stats-2026&format=json"
+
+# Top 5 apps pesquisados (Global)
+cat "docs/Base de conhecimento/INDEX-GLOBAL.json" | jq '[.entries[] | {name, score}] | sort_by(-.score) | .[0:5]'
+
+# Top 5 apps pesquisados (Brasil)
+cat "docs/Base de conhecimento/INDEX-BRASIL.json" | jq '[.entries[] | {name, score}] | sort_by(-.score) | .[0:5]'
 ```
 
 ---
 
-## TECH STACK
+## TECH STACK (Pesquisa)
+
+- **Automacao:** ClawdBot
+- **Pesquisa:** web_search (NUNCA curl/wget/firecrawl)
+- **Comunicacao:** Telegram
+- **Indices:** JSON + jq
+
+## TECH STACK (Apps Existentes - referencia)
 
 - **Framework:** Next.js 15 + TypeScript
 - **Estilo:** Tailwind CSS
 - **i18n:** next-intl (pt-BR, en-US, es)
 - **Banco:** Neon PostgreSQL (NAO Supabase)
-- **Deploy:** Railway
-- **Testes:** Playwright MCP
-- **Automacao:** ClawdBot
+- **Deploy:** Railway (quotas esgotadas - NAO buildar novos)
 - **IA:** Groq (llama-3.3-70b-versatile)
-
----
-
-## APPS COM IA - REGRAS ESPECIAIS
-
-Se o app usar IA (Groq), DEVE:
-
-1. **Respeitar idioma do usuario:**
-```typescript
-// Frontend envia locale
-body: JSON.stringify({ input, locale })
-
-// Backend inclui no prompt
-const lang = LANGUAGE_NAMES[locale] || 'Portuguese';
-const prompt = `You MUST write ALL responses in ${lang}.`;
-```
-
-2. **Ter GROQ_API_KEY no Railway:**
-```bash
-railway variables set GROQ_API_KEY="$GROQ_API_KEY"
-```
-
-3. **Exibir banner de aviso:**
-```tsx
-<div className="bg-amber-50 border-b border-amber-200 py-2 text-center">
-  <p className="text-amber-800 text-sm">IA basica para fins de teste.</p>
-</div>
-```
-
-4. **Modelo atual:** `llama-3.3-70b-versatile` (3.1 foi descontinuado)
-
----
-
-## CHECKLIST PRE-DEPLOY
-
-### SEO + i18n
-- [ ] generateMetadata() com traducoes
-- [ ] alternates.languages com pt-BR, en-US, es, x-default
-- [ ] sitemap.ts com URLs por locale
-- [ ] robots.ts permitindo indexacao
-- [ ] Google verification tag
-
-### Widgets
-- [ ] DonationWidget.tsx no hero/area visivel
-- [ ] FeedbackWidget.tsx no footer
-- [ ] /api/feedback/route.ts conectado ao Neon
-- [ ] Traducoes em messages/*.json
-
-### Deploy
-- [ ] npm run build sem erros
-- [ ] railway up --service [slug]-production --detach (IMPORTANTE: usar --service para URL correta!)
-- [ ] curl retorna 200
-- [ ] Sitemap acessivel (/sitemap.xml)
-
-### Pos-Deploy (SEGUIR `.claude/guides/POST-DEPLOY-CHECKLIST.md`)
-- [ ] Verificar app online (curl retorna 200)
-- [ ] **ADICIONAR AO DASHBOARD** (POST /api/apps) <- CRITICO!
-- [ ] Sync Dashboard (GET /api/sync)
-- [ ] **ALIMENTAR API TARGETING** (POST /api/targeting) <- Keywords + Contas X!
-- [ ] Adicionar ao Portfolio (via API)
-- [ ] Verificar DonationWidget visivel (nao colapsado)
-- [ ] Verificar FeedbackWidget no footer
-- [ ] Submeter sitemap no GSC
-- [ ] Criar gate de deploy
 
 ---
 
@@ -293,13 +163,12 @@ railway variables set GROQ_API_KEY="$GROQ_API_KEY"
 | Diretorio | Conteudo |
 |-----------|----------|
 | `~/.clawdbot/cron/jobs.json` | Configuracao dos jobs |
-| `~/agent-projects/builds/` | Codigo fonte dos apps |
-| `~/agent-projects/gates/` | Arquivos de gate |
-| `~/agent-projects/specs/` | Specs dos produtos |
-| `~/agent-projects/research/` | Pesquisas diarias |
-| `~/clawd/deploys/` | Status de deploys |
-| `~/clawd/templates/` | Templates obrigatorios |
-| `~/clawd/.env` | Variaveis sensiveis (NAO commitar) |
+| `docs/Base de conhecimento/` | Base de conhecimento (pesquisas + indices) |
+| `~/clawd/RESEARCH.md` | Metodologia de pesquisa dual-track |
+| `~/agent-projects/research/` | Pesquisas antigas (backup) |
+| `~/agent-projects/specs/` | Specs dos produtos (backup) |
+| `~/agent-projects/builds/` | Codigo fonte dos apps existentes |
+| `~/clawd/deploys/` | Status de deploys existentes |
 
 ---
 
@@ -307,35 +176,13 @@ railway variables set GROQ_API_KEY="$GROQ_API_KEY"
 
 ### ClawdBot nao esta rodando
 ```bash
-# Verificar processo
 ps aux | grep clawdbot
-
-# Se nao estiver rodando, iniciar manualmente
-# (geralmente inicia automatico via LaunchAgent)
 ```
 
-### Deploy falhou no Railway
-```bash
-# Verificar logs
-railway logs
-
-# Verificar se tem servico duplicado
-railway status
-railway up --service [nome-do-servico] --detach
-```
-
-### GSC nao esta logado
-- O job de deploy vai notificar "GSC requer login manual"
-- Nao bloqueia o deploy, apenas a submissao do sitemap
-- Login manual: https://search.google.com/search-console
-
-### Gate bloqueou proxima fase
-```bash
-# Ver o que bloqueou
-cat ~/agent-projects/gates/$(date +%Y-%m-%d)-*.json | jq '.blockers'
-
-# Corrigir o problema e recriar gate manualmente se necessario
-```
+### Job de pesquisa falhou
+- Verificar se arquivo foi criado na Base de Conhecimento
+- Verificar se INDEX foi atualizado
+- Verificar se Telegram recebeu mensagem
 
 ---
 
@@ -410,22 +257,19 @@ https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 ## LEMBRETES CRITICOS
 
-1. Jobs rodam **Seg-Sab** (domingo so tem Weekly Report)
+1. Jobs de pesquisa rodam **Seg-Sab** (domingo so tem Weekly Report)
 2. **ClawdBot** e o sistema de automacao (NAO crontab)
-3. Templates ficam em **~/clawd/** (NAO .claude/)
-4. Gates bloqueiam proxima fase se passed=false
-5. **Neon** para feedback, NAO Supabase
-6. Apos deploy, adicionar ao Portfolio automaticamente
-7. **TODOS** os apps devem ter DonationWidget + FeedbackWidget
-8. Apps com IA: GROQ_API_KEY + respeitar idioma + banner
-9. **Handle X:** @gabrielabiramia (NAO @garimdreaming)
-10. **NAO** mencionar "agente autonomo" nos apps
-11. **LER design-system.md ANTES de buildar** - evita textos invisiveis
-12. **TESTAR contraste em CADA deploy** - screenshot + verificacao visual
-13. **SE texto invisivel = BLOQUEIA deploy** ate corrigir
-14. **APOS deploy: ADICIONAR ao Dashboard** (POST /api/apps) <- nao esquecer!
-15. **Widgets DEVEM seguir design de widgets-design.md** exatamente
+3. Metodologia de pesquisa em **~/clawd/RESEARCH.md**
+4. Base de conhecimento em **docs/Base de conhecimento/**
+5. **2 tracks independentes:** Global (06:00) e Brasil (06:30)
+6. Cada pesquisa DEVE atualizar o INDEX correspondente (JSON)
+7. **Handle X:** @gabrielabiramia (NAO @garimdreaming)
+8. **NAO** mencionar "agente autonomo"
+9. **NAO** buildar novos apps (Railway quotas esgotadas)
+10. Apps existentes continuam no ar - dashboard sync a cada 6h
+11. Score maximo agora e **65 pontos** (base 50 + bonus 15)
+12. Mensagens Telegram SEMPRE em portugues
 
 ---
 
-Ultima atualizacao: 2026-02-04
+Ultima atualizacao: 2026-02-05
