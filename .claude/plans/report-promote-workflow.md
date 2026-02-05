@@ -21,10 +21,10 @@
 
 ```bash
 # Sync do dashboard (atualiza todas as métricas)
-curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 
 # Verificar resultado
-curl "https://garimdreaming-dashboard-production.up.railway.app/api/apps"
+curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/apps"
 ```
 
 ### 1.2 Métricas Individuais (se necessário)

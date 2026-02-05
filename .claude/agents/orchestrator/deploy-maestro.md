@@ -151,12 +151,12 @@ Passos detalhados para verificacao via Playwright:
 ### FASE 7: Finalizacao (2 min)
 ```
 [ ] Adicionar/atualizar app no Dashboard GarimDreaming:
-    curl -X POST https://garimdreaming-dashboard-production.up.railway.app/api/apps \
+    curl -X POST https://gabrielabiramia-dashboard-production.up.railway.app/api/apps \
       -H "Content-Type: application/json" \
       -d '{"name":"[APP]","slug":"[slug]","url":"[URL]","description":"[DESC]","score":85}'
 
 [ ] SYNC OBRIGATORIO - Sincronizar dashboard com stats de todos os apps:
-    curl "https://garimdreaming-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
+    curl "https://gabrielabiramia-dashboard-production.up.railway.app/api/sync?secret=garimdreaming-stats-2026"
 
 [ ] Verificar resultado do sync - TODOS 6 apps devem mostrar "success":
     - clipgenius: ✅

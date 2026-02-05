@@ -283,7 +283,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: t('title'),
       description: t('description'),
-      creator: '@garimdreaming',
+      creator: '@gabrielabiramia',
     },
     robots: {
       index: true,
@@ -374,7 +374,7 @@ export default function HomePage() {
       <footer>
         <p>
           {t('Footer.builtBy')}{' '}
-          <Link href="https://x.com/garimdreaming">GarimDreaming</Link>
+          <Link href="https://x.com/gabrielabiramia">@gabrielabiramia</Link>
         </p>
         <p>{t('Footer.copyright')}</p>
       </footer>
