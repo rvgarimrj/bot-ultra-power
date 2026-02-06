@@ -2,8 +2,8 @@
   "version": 1,
   "track": "global",
   "description": "Indice de pesquisas de dores universais - apps que funcionam em qualquer pais",
-  "lastUpdated": "2026-02-05",
-  "totalApps": 17,
+  "lastUpdated": "2026-02-06",
+  "totalApps": 20,
   "entries": [
     {
       "name": "Newsletter Digest",
@@ -202,6 +202,39 @@
       "description": "Checklist automatizado de pre-lancamento para sites e MVPs",
       "tam": "$1.2 bilhoes",
       "ranking": 2
+    },
+    {
+      "name": "CostPilot AI",
+      "slug": "costpilot-ai",
+      "date": "06-02-2026",
+      "file": "pesquisas/globais/06-02-2026-GLOBAL.MD",
+      "score": 49,
+      "category": "devtools",
+      "description": "Dashboard para monitorar gastos com APIs de AI em tempo real com alertas de budget",
+      "tam": "$15 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "SubTrackr",
+      "slug": "subtrackr",
+      "date": "06-02-2026",
+      "file": "pesquisas/globais/06-02-2026-GLOBAL.MD",
+      "score": 43,
+      "category": "utilidade",
+      "description": "Rastreador de subscricoes SaaS para freelancers com alertas de renovacao",
+      "tam": "$16.89 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "SkillRadar",
+      "slug": "skillradar",
+      "date": "06-02-2026",
+      "file": "pesquisas/globais/06-02-2026-GLOBAL.MD",
+      "score": 41,
+      "category": "carreira",
+      "description": "Analisa job postings vs seu perfil para identificar skill gaps com recomendacoes",
+      "tam": "$457 bilhoes",
+      "ranking": 3
     }
   ]
 }

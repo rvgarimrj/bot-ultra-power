@@ -3,7 +3,7 @@
 
 [Nome do App]
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US -> para o post em ingles e vc coloca o locale para os outros em cada lingua o locale correto.
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US -> para o post em ingles e vc coloca o locale para os outros em cada lingua o locale correto.
 
 2. Quero que a ordem dos apps q aparcem no portfolio seja aleatoria assim sempre termos novos apps nas primeiras posicoes. a cada deploy vc vai alterar essa ordem de modo aleatorio
 

@@ -111,6 +111,9 @@ Bitcoin SegWit: bc1qtjqk6cr4qmwqgnrzc8udf8lfu9llw444v0ypav
 | PropostaAI | https://proposta-ai-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | ClipToAll | https://cliptoall-v2-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | GestaoMEI | https://gestaomei-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| QuoteCraft | https://quotecraft-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| ToolMatch AI | https://toolmatch-ai-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
+| FeedbackPin | https://feedbackpin-production.up.railway.app | /api/stats?secret=garimdreaming-stats-2026 |
 | **Portfolio** | https://gabrielabiramia-portfolio-production.up.railway.app | - |
 | **Dashboard** | https://gabrielabiramia-dashboard-production.up.railway.app | - |
 

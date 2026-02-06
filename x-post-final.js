@@ -13,108 +13,108 @@ const WAIT_BETWEEN_POSTS_MS = 75000;
 const PROJECTS = [
   {
     name: 'ClipGenius',
-    url: 'https://garimdreaming-portfolio-production.up.railway.app',
+    url: 'https://gabrielabiramia-portfolio-production.up.railway.app',
     tweet: {
       en: `We just added another awesome App to our portfolio. Check it out and let me know what you think...
 
 ClipGenius
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US
 
 #BuildInPublic #IndieHacker #Portfolio`,
       pt: `Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua opiniao...
 
 ClipGenius
 
-https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+https://gabrielabiramia-portfolio-production.up.railway.app/pt-BR
 
 #BuildInPublic #IndieHacker #Portfolio`,
       es: `Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y dime que opinas...
 
 ClipGenius
 
-https://garimdreaming-portfolio-production.up.railway.app/es
+https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 #BuildInPublic #IndieHacker #Portfolio`
     }
   },
   {
     name: 'BrandPulse AI',
-    url: 'https://garimdreaming-portfolio-production.up.railway.app',
+    url: 'https://gabrielabiramia-portfolio-production.up.railway.app',
     tweet: {
       en: `We just added another awesome App to our portfolio. Check it out and let me know what you think...
 
 BrandPulse AI
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US
 
 #BuildInPublic #IndieHacker #Portfolio`,
       pt: `Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua opiniao...
 
 BrandPulse AI
 
-https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+https://gabrielabiramia-portfolio-production.up.railway.app/pt-BR
 
 #BuildInPublic #IndieHacker #Portfolio`,
       es: `Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y dime que opinas...
 
 BrandPulse AI
 
-https://garimdreaming-portfolio-production.up.railway.app/es
+https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 #BuildInPublic #IndieHacker #Portfolio`
     }
   },
   {
     name: 'ContentAtomizer',
-    url: 'https://garimdreaming-portfolio-production.up.railway.app',
+    url: 'https://gabrielabiramia-portfolio-production.up.railway.app',
     tweet: {
       en: `We just added another awesome App to our portfolio. Check it out and let me know what you think...
 
 ContentAtomizer
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US
 
 #BuildInPublic #IndieHacker #Portfolio`,
       pt: `Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua opiniao...
 
 ContentAtomizer
 
-https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+https://gabrielabiramia-portfolio-production.up.railway.app/pt-BR
 
 #BuildInPublic #IndieHacker #Portfolio`,
       es: `Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y dime que opinas...
 
 ContentAtomizer
 
-https://garimdreaming-portfolio-production.up.railway.app/es
+https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 #BuildInPublic #IndieHacker #Portfolio`
     }
   },
   {
     name: 'FocusFlow',
-    url: 'https://garimdreaming-portfolio-production.up.railway.app',
+    url: 'https://gabrielabiramia-portfolio-production.up.railway.app',
     tweet: {
       en: `We just added another awesome App to our portfolio. Check it out and let me know what you think...
 
 FocusFlow
 
-https://garimdreaming-portfolio-production.up.railway.app/en-US
+https://gabrielabiramia-portfolio-production.up.railway.app/en-US
 
 #BuildInPublic #IndieHacker #Portfolio`,
       pt: `Acabamos de adicionar no portfolio mais um App top. Da uma olhada la e me de sua opiniao...
 
 FocusFlow
 
-https://garimdreaming-portfolio-production.up.railway.app/pt-BR
+https://gabrielabiramia-portfolio-production.up.railway.app/pt-BR
 
 #BuildInPublic #IndieHacker #Portfolio`,
       es: `Acabamos de agregar otra App increible a nuestro portafolio. Echale un vistazo y dime que opinas...
 
 FocusFlow
 
-https://garimdreaming-portfolio-production.up.railway.app/es
+https://gabrielabiramia-portfolio-production.up.railway.app/es
 
 #BuildInPublic #IndieHacker #Portfolio`
     }

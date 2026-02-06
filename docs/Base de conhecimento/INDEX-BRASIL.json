@@ -2,8 +2,8 @@
   "version": 1,
   "track": "brasil",
   "description": "Indice de pesquisas de dores brasileiras - problemas que concorrentes internacionais nao resolvem",
-  "lastUpdated": "2026-02-05",
-  "totalApps": 7,
+  "lastUpdated": "2026-02-06",
+  "totalApps": 10,
   "entries": [
     {
       "name": "PropostaAI",
@@ -81,6 +81,39 @@
       "description": "Widget de feedback visual para sites - clientes clicam e anotam direto na pagina",
       "tam": "$2.1 bilhoes",
       "ranking": 1
+    },
+    {
+      "name": "ReformaTrib",
+      "slug": "reformatrib",
+      "date": "06-02-2026",
+      "file": "pesquisas/brasil/06-02-2026-BRASIL.MD",
+      "score": 60,
+      "category": "compliance",
+      "description": "Dashboard de adaptacao para Reforma Tributaria 2026 - simulador CBS/IBS para pequenas empresas",
+      "tam": "R$ 5 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "CreatorCash BR",
+      "slug": "creatorcash-br",
+      "date": "06-02-2026",
+      "file": "pesquisas/brasil/06-02-2026-BRASIL.MD",
+      "score": 53,
+      "category": "creator-economy",
+      "description": "Plataforma de monetizacao para criadores de conteudo brasileiros com foco em receita recorrente",
+      "tam": "R$ 20 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "GigFinance BR",
+      "slug": "gigfinance-br",
+      "date": "06-02-2026",
+      "file": "pesquisas/brasil/06-02-2026-BRASIL.MD",
+      "score": 47,
+      "category": "financeiro",
+      "description": "App de controle financeiro para motoristas e entregadores de app com calculo de lucro real",
+      "tam": "R$ 8 bilhoes",
+      "ranking": 3
     }
   ]
 }

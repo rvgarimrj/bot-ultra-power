@@ -107,8 +107,8 @@
     {
       "name": "QuoteCraft",
       "slug": "quotecraft",
-      "url": null,
-      "status": "spec-only",
+      "url": "https://quotecraft-production.up.railway.app",
+      "status": "ativo",
       "track": "brasil",
       "score": 37,
       "date": "2026-02-04",
@@ -117,8 +117,8 @@
     {
       "name": "ToolMatch AI",
       "slug": "toolmatch-ai",
-      "url": null,
-      "status": "spec-only",
+      "url": "https://toolmatch-ai-production.up.railway.app",
+      "status": "ativo",
       "track": "global",
       "score": 43,
       "date": "2026-02-04",
@@ -127,8 +127,8 @@
     {
       "name": "FeedbackPin",
       "slug": "feedbackpin",
-      "url": null,
-      "status": "spec-only",
+      "url": "https://feedbackpin-production.up.railway.app",
+      "status": "ativo",
       "track": "brasil",
       "score": 45,
       "date": "2026-02-05",
