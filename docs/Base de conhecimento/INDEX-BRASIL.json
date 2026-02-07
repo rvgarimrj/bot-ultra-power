@@ -2,8 +2,8 @@
   "version": 1,
   "track": "brasil",
   "description": "Indice de pesquisas de dores brasileiras - problemas que concorrentes internacionais nao resolvem",
-  "lastUpdated": "2026-02-06",
-  "totalApps": 10,
+  "lastUpdated": "2026-02-07",
+  "totalApps": 13,
   "entries": [
     {
       "name": "PropostaAI",
@@ -113,6 +113,39 @@
       "category": "financeiro",
       "description": "App de controle financeiro para motoristas e entregadores de app com calculo de lucro real",
       "tam": "R$ 8 bilhoes",
+      "ranking": 3
+    },
+    {
+      "name": "HostTax BR",
+      "slug": "hosttax-br",
+      "date": "07-02-2026",
+      "file": "pesquisas/brasil/07-02-2026-BRASIL.MD",
+      "score": 50,
+      "category": "compliance",
+      "description": "Calculadora tributaria para anfitrioes de aluguel por temporada - imposto subiu de 27,5% para 44%",
+      "tam": "R$ 12.4 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "PixRecorrente",
+      "slug": "pixrecorrente",
+      "date": "07-02-2026",
+      "file": "pesquisas/brasil/07-02-2026-BRASIL.MD",
+      "score": 42,
+      "category": "financeiro",
+      "description": "Gestao de cobrancas recorrentes com Pix Automatico para MEIs e pequenos negocios",
+      "tam": "R$ 10 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "AutonomosPJ",
+      "slug": "autonomospj",
+      "date": "07-02-2026",
+      "file": "pesquisas/brasil/07-02-2026-BRASIL.MD",
+      "score": 41,
+      "category": "compliance",
+      "description": "Guia interativo para autonomos que precisam abrir CNPJ - obrigatorio a partir de julho 2026",
+      "tam": "R$ 5 bilhoes",
       "ranking": 3
     }
   ]

@@ -2,8 +2,8 @@
   "version": 1,
   "track": "global",
   "description": "Indice de pesquisas de dores universais - apps que funcionam em qualquer pais",
-  "lastUpdated": "2026-02-06",
-  "totalApps": 20,
+  "lastUpdated": "2026-02-07",
+  "totalApps": 23,
   "entries": [
     {
       "name": "Newsletter Digest",
@@ -234,6 +234,39 @@
       "category": "carreira",
       "description": "Analisa job postings vs seu perfil para identificar skill gaps com recomendacoes",
       "tam": "$457 bilhoes",
+      "ranking": 3
+    },
+    {
+      "name": "DigestFlow",
+      "slug": "digestflow",
+      "date": "07-02-2026",
+      "file": "pesquisas/globais/07-02-2026-GLOBAL.MD",
+      "score": 46,
+      "category": "produtividade",
+      "description": "AI newsletter consolidator que resume multiplas fontes em um digest matinal personalizado",
+      "tam": "$4.27 bilhoes",
+      "ranking": 1
+    },
+    {
+      "name": "StreakSave",
+      "slug": "streaksave",
+      "date": "07-02-2026",
+      "file": "pesquisas/globais/07-02-2026-GLOBAL.MD",
+      "score": 44,
+      "category": "wellness",
+      "description": "Habit tracker focado em recovery gentil ao inves de punicao - grace periods e suporte",
+      "tam": "$15 bilhoes",
+      "ranking": 2
+    },
+    {
+      "name": "FocusShield",
+      "slug": "focusshield",
+      "date": "07-02-2026",
+      "file": "pesquisas/globais/07-02-2026-GLOBAL.MD",
+      "score": 42,
+      "category": "produtividade",
+      "description": "Protege focus time no calendario automaticamente e mostra custo real de meetings",
+      "tam": "$81 bilhoes",
       "ranking": 3
     }
   ]
